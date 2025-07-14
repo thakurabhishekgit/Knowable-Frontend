@@ -47,7 +47,10 @@ export function ChatPanel({ document }) {
   // Effect to fetch chat history on component mount
   useEffect(() => {
     const fetchChatHistory = async () => {
-      if (!document?.id) return;
+      if (!document?.id) {
+        setIsHistoryLoading(false);
+        return
+      };
       setIsHistoryLoading(true);
       try {
         const history = await api.get(`/api/questions/getDocumentQuestions/${document.id}`);
@@ -142,14 +145,14 @@ export function ChatPanel({ document }) {
   };
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
+    <Card className="h-full flex flex-col border-0 shadow-none rounded-none">
+      <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <Bot className="w-6 h-6" />
           Chat with AI
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0">
+      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
         <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
           {isHistoryLoading ? (
              <div className="flex items-center justify-center h-full">
