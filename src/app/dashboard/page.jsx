@@ -10,6 +10,22 @@ import {
   } from "@/components/ui/card";
 import { Folder } from "lucide-react";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+const getInitials = (name = "") => {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 export default function DashboardPage() {
     const [user, setUser] = useState(null);
@@ -27,6 +43,29 @@ export default function DashboardPage() {
 
   return (
       <div>
+        {user && (
+            <Card className="mb-8">
+                <CardHeader>
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-16 w-16">
+                            <AvatarImage src={user.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user.username} data-ai-hint="profile" />
+                            <AvatarFallback className="text-2xl">{getInitials(user.username)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <CardTitle className="text-2xl">{user.username}</CardTitle>
+                            <CardDescription>{user.email}</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                        {user.universityName && <p><span className="font-semibold text-foreground">University:</span> {user.universityName}</p>}
+                        {user.createdAt && <p><span className="font-semibold text-foreground">Member since:</span> {formatDate(user.createdAt)}</p>}
+                    </div>
+                </CardContent>
+            </Card>
+        )}
+
         <div className="space-y-0.5 mb-6">
             <h2 className="text-2xl font-bold tracking-tight">Welcome, {user.username}!</h2>
             <p className="text-muted-foreground">

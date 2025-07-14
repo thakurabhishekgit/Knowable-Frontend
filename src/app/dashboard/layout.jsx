@@ -19,12 +19,6 @@ const getInitials = (name = "") => {
       .toUpperCase();
 };
 
-const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
 export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,25 +43,6 @@ export default function DashboardLayout({ children }) {
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
         <aside className="-mx-4 lg:w-1/4">
           <nav className="flex flex-col space-y-4">
-            {user && (
-                <div className="px-4 mb-4">
-                    <div className="flex items-center gap-3 mb-4">
-                         <Avatar className="h-12 w-12">
-                            <AvatarImage src={user.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user.username} data-ai-hint="profile" />
-                            <AvatarFallback className="text-xl">{getInitials(user.username)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold text-lg">{user.username}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                        </div>
-                    </div>
-                     <div className="space-y-1 text-sm">
-                        {user.universityName && <p><span className="font-semibold">University:</span> {user.universityName}</p>}
-                        {user.createdAt && <p><span className="font-semibold">Member since:</span> {formatDate(user.createdAt)}</p>}
-                    </div>
-                </div>
-            )}
-            <Separator />
              <div className="px-4 py-2">
                 <h3 className="mb-2 text-lg font-semibold tracking-tight">Workspaces</h3>
                 <div className="flex flex-col gap-1">
