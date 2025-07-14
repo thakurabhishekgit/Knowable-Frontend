@@ -78,15 +78,14 @@ export default function SettingsPage() {
         return;
     }
 
+    // Payload should only contain fields the backend expects for this endpoint.
     const payload = {
         username: formData.username,
         email: formData.email,
         universityName: formData.universityName,
     };
     
-    if (formData.password) {
-        payload.password = formData.password;
-    }
+    // DO NOT send password, as the backend endpoint doesn't handle it.
 
     try {
       // The update endpoint returns the full updated user object
