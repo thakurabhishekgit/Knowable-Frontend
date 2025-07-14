@@ -84,7 +84,8 @@ export default function PreviousPapersPage() {
         if (documentId) {
             setIsLoading(true);
             try {
-                const docPromise = api.get(`/api/documents/${documentId}`);
+                // Corrected API endpoint for fetching a single document
+                const docPromise = api.get(`/api/documents/document/${documentId}`);
                 const papersPromise = api.get(`/api/previous-papers/document/${documentId}`);
                 
                 const [docData, papersData] = await Promise.all([docPromise, papersPromise]);
@@ -258,4 +259,3 @@ export default function PreviousPapersPage() {
         </div>
     );
 }
-
