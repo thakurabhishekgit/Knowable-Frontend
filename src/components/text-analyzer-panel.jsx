@@ -3,10 +3,11 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown, Search } from 'lucide-react';
+import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +18,7 @@ import { analyzeText } from '@/ai/flows/text-analyzer-flow';
 import { useToast } from '@/hooks/use-toast';
 
 const analysisPrompts = [
-    { text: "Summarize this section", icon: BookText, task: "Summarize" },
+    { text: "Summarize this text", icon: BookText, task: "Summarize" },
     { text: "Explain this concept", icon: Lightbulb, task: "Explain" },
 ];
 
@@ -25,38 +26,29 @@ const popularLanguages = ["Hindi", "Telugu", "Spanish", "French"];
 
 export function TextAnalyzerPanel({ document }) {
     const { toast } = useToast();
-    const [searchText, setSearchText] = useState('');
+    const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState('');
     const [targetLanguage, setTargetLanguage] = useState('Hindi');
     const [customLanguage, setCustomLanguage] = useState('');
 
     const handleAnalysis = async (task, options = {}) => {
-        if (!searchText.trim()) {
+        if (!inputText.trim()) {
             toast({
                 variant: "destructive",
                 title: "Input Required",
-                description: "Please type the text or concept you want to analyze.",
+                description: "Please paste the text you want to analyze.",
             });
             return;
         }
 
         setIsLoading(true);
         setAnalysisResult('');
-
-        // Construct the full text for the AI to use
-        const fullTextContext = `
-            Based on the following document, find the section related to "${searchText}" and then perform the requested action.
-            Document Text:
-            ---
-            ${document.textExtracted}
-            ---
-        `;
         
-        const finalTask = options.language ? `${task} ${options.language}` : task;
+        const finalTask = options.language ? `${task} to ${options.language}` : task;
 
         try {
-            const result = await analyzeText({ text: fullTextContext, task: finalTask });
+            const result = await analyzeText({ text: inputText, task: finalTask });
             setAnalysisResult(result);
         } catch (error) {
             console.error("Failed to analyze text:", error);
@@ -71,21 +63,18 @@ export function TextAnalyzerPanel({ document }) {
 
     const handleTranslate = () => {
         const lang = customLanguage.trim() || targetLanguage;
-        handleAnalysis('Translate this to', { language: lang });
+        handleAnalysis('Translate this', { language: lang });
     };
 
     return (
         <div className="h-full flex flex-col p-2 md:p-4 gap-4">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Type a word or phrase from the document to analyze..."
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    className="pl-10"
-                    disabled={isLoading}
-                />
-            </div>
+            <Textarea
+                placeholder="Copy text from the 'Text' tab and paste it here to analyze..."
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                className="flex-grow text-sm h-32 resize-none"
+                disabled={isLoading}
+            />
             
             <div className="flex flex-wrap items-center gap-2">
                 {analysisPrompts.map((prompt) => (
@@ -93,7 +82,7 @@ export function TextAnalyzerPanel({ document }) {
                         key={prompt.text}
                         variant="outline"
                         onClick={() => handleAnalysis(prompt.task)}
-                        disabled={isLoading || !searchText.trim()}
+                        disabled={isLoading || !inputText.trim()}
                         size="sm"
                     >
                         <prompt.icon className="w-4 h-4 mr-2" />
@@ -105,7 +94,7 @@ export function TextAnalyzerPanel({ document }) {
             <div className="flex flex-wrap items-center gap-2">
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="min-w-[120px]" disabled={isLoading || !searchText.trim()}>
+                        <Button variant="outline" size="sm" className="min-w-[120px]" disabled={isLoading || !inputText.trim()}>
                             Translate to: {customLanguage || targetLanguage}
                             <ChevronDown className="w-4 h-4 ml-auto" />
                         </Button>
@@ -123,11 +112,11 @@ export function TextAnalyzerPanel({ document }) {
                     value={customLanguage}
                     onChange={(e) => setCustomLanguage(e.target.value)}
                     className="h-9 text-sm flex-1 min-w-[150px]"
-                    disabled={isLoading || !searchText.trim()}
+                    disabled={isLoading || !inputText.trim()}
                 />
                  <Button
                     onClick={handleTranslate}
-                    disabled={isLoading || !searchText.trim()}
+                    disabled={isLoading || !inputText.trim()}
                     size="icon"
                     variant="outline"
                 >
@@ -158,7 +147,7 @@ export function TextAnalyzerPanel({ document }) {
                                     analysisResult
                                 ) : (
                                     <p className="text-muted-foreground text-center pt-8">
-                                        The analysis result will appear here.
+                                        Paste text above and choose an action. The result will appear here.
                                     </p>
                                 )}
                             </div>
