@@ -23,9 +23,10 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    const profilePictureFile = data.profilePicture;
+    const profilePictureFile = form.profilePicture.files[0];
 
     try {
       // Step 1: Register the user with text data
@@ -39,7 +40,7 @@ export default function RegisterPage() {
       const registeredUser = await api.post('/api/users/registerUser', userPayload);
 
       // Step 2: If there's a profile picture, upload it
-      if (profilePictureFile && profilePictureFile.size > 0 && registeredUser && registeredUser.id) {
+      if (profilePictureFile && registeredUser && registeredUser.id) {
         const pictureFormData = new FormData();
         pictureFormData.append('profilePicture', profilePictureFile);
         
