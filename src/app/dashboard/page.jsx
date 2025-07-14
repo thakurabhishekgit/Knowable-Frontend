@@ -14,16 +14,15 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { NewItemDialog } from "@/components/new-item-dialog";
-import { PlusCircle, FileText, User as UserIcon, Mail, School } from "lucide-react";
+import { PlusCircle, FileText, Mail, School } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const recentActivity = [
   { user: "Alex Doe", action: "updated", item: "Project Proposal", time: "2h ago", avatar: "https://placehold.co/100x100.png" },
@@ -44,7 +43,7 @@ const chartData = [
 const chartConfig = {
   items: {
     label: "Items",
-    color: "hsl(var(--primary))",
+    color: "hsl(var(--chart-1))",
   },
 };
 
@@ -58,129 +57,143 @@ const getInitials = (name = "") => {
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const userData = localStorage.getItem("user");
     if (userData) {
       setUser(JSON.parse(userData));
     }
   }, []);
 
+  if (!isMounted) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <AppLayout>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Card className="lg:col-span-2 xl:col-span-1">
-          <CardHeader>
-            <CardTitle>Welcome, {user?.username || 'User'}!</CardTitle>
-            <CardDescription>Here's your profile information.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-                <Avatar className="h-20 w-20">
-                    <AvatarImage src={user?.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user?.username || "User"} data-ai-hint="profile" />
-                    <AvatarFallback className="text-2xl">{user ? getInitials(user.username) : "U"}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                    <p className="text-lg font-bold">{user?.username}</p>
-                    <p className="text-sm text-muted-foreground">Welcome to your dashboard</p>
+      <div className="flex-1 space-y-4">
+          <div className="flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+             <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Items</CardTitle>
+                 <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">4,592</div>
+                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              </CardContent>
+            </Card>
+             <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">New Documents</CardTitle>
+                 <PlusCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+235</div>
+                <p className="text-xs text-muted-foreground">+18.1% from last month</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Workspace Size</CardTitle>
+                 <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">1.2 GB</div>
+                <p className="text-xs text-muted-foreground">Your team is growing</p>
+              </CardContent>
+            </Card>
+             <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+5</div>
+                <p className="text-xs text-muted-foreground">members online</p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
+              <CardHeader>
+                <CardTitle>Knowledge Growth</CardTitle>
+                <CardDescription>Your team's content creation over the last 6 months.</CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                 <ChartContainer config={chartConfig} className="h-full w-full">
+                   <AreaChart accessibilityLayer data={chartData} margin={{ left: 12, right: 12, top: 10 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      tickFormatter={(value) => value.slice(0, 3)}
+                    />
+                    <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                    <Area dataKey="items" type="natural" fill="var(--color-items)" fillOpacity={0.4} stroke="var(--color-items)" />
+                  </AreaChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+            <Card className="col-span-4 lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>What's new in your workspace.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {recentActivity.map((activity, index) => (
+                    <div key={index} className="flex items-center gap-4">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={activity.avatar} alt={activity.user} data-ai-hint="avatar person" />
+                        <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium leading-none">
+                          <span className="font-semibold">{activity.user}</span> {activity.action}{" "}
+                          <span className="font-semibold text-primary">{activity.item}</span>
+                        </p>
+                         <p className="text-sm text-muted-foreground">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-            </div>
-            <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{user?.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <School className="h-4 w-4 text-muted-foreground" />
-                    <span>{user?.universityName || 'University not set'}</span>
-                </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="lg:col-span-2 xl:col-span-3">
-          <CardHeader>
-            <CardTitle>Knowledge Growth</CardTitle>
-            <CardDescription>
-              Your team's content creation over the last 6 months.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-64 w-full">
-              <AreaChart
-                data={chartData}
-                margin={{ left: 12, right: 12 }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
-                />
-                <Area
-                  dataKey="items"
-                  type="natural"
-                  fill="var(--color-items)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-items)"
-                />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-3 xl:col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              What's new in your workspace.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src={activity.avatar} alt={activity.user} data-ai-hint="avatar person" />
-                    <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="text-sm">
-                      <span className="font-semibold">{activity.user}</span> {activity.action}{" "}
-                      <span className="font-semibold text-primary">{activity.item}</span>
-                    </p>
-                  </div>
-                  <div className="text-sm text-muted-foreground">{activity.time}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="lg:col-span-3 xl:col-span-4">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
-                <PlusCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">New Item</div>
-                <p className="text-xs text-muted-foreground">
-                Quickly add a new document or note.
-                </p>
-            </CardContent>
-            <CardFooter>
-                <NewItemDialog>
-                <Button className="w-full">Create New</Button>
-                </NewItemDialog>
-            </CardFooter>
-        </Card>
-
+              </CardContent>
+            </Card>
+          </div>
       </div>
     </AppLayout>
   );

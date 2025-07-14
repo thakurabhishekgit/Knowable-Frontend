@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, LifeBuoy } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
@@ -33,7 +33,6 @@ export function UserNav() {
     }
   }, []);
   
-  // This effect will listen for changes in localStorage and update the user state
   useEffect(() => {
     const handleStorageChange = () => {
         const userData = localStorage.getItem("user");
@@ -102,6 +101,10 @@ export function UserNav() {
               <span>Settings</span>
             </Link>
           </DropdownMenuItem>
+           <DropdownMenuItem>
+              <LifeBuoy className="mr-2 h-4 w-4" />
+              <span>Support</span>
+            </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

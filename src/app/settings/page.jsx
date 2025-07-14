@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { AppLayout } from "@/components/app-layout";
+import { SettingsLayout } from "@/components/settings-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,10 +13,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 const getInitials = (name = "") => {
     if (!name) return "";
@@ -30,17 +33,14 @@ const getUserId = (user) => {
     return user?.id || null;
 }
 
-export default function SettingsPage() {
+function ProfileForm() {
   const { toast } = useToast();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     universityName: '',
-    password: ''
   });
-  const [profilePictureFile, setProfilePictureFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -51,9 +51,7 @@ export default function SettingsPage() {
         username: parsedUser.username || '',
         email: parsedUser.email || '',
         universityName: parsedUser.universityName || '',
-        password: ''
       });
-      setPreviewUrl(parsedUser.profilePictureUrl);
     }
   }, []);
 
@@ -61,15 +59,7 @@ export default function SettingsPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  const handlePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfilePictureFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
+  
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     const userId = getUserId(user);
@@ -100,6 +90,74 @@ export default function SettingsPage() {
     }
   };
 
+  if (!user) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Profile</h3>
+        <p className="text-sm text-muted-foreground">
+          This is how others will see you on the site.
+        </p>
+      </div>
+      <Separator />
+      <form onSubmit={handleProfileUpdate} className="space-y-8">
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <Input id="username" name="username" value={formData.username} onChange={handleInputChange} className="max-w-sm" />
+          <p className="text-sm text-muted-foreground">
+            This will be your public display name.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} className="max-w-sm" />
+           <p className="text-sm text-muted-foreground">
+            Your email address for login and notifications.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="universityName">University</Label>
+          <Input id="universityName" name="universityName" value={formData.universityName} onChange={handleInputChange} className="max-w-sm" />
+           <p className="text-sm text-muted-foreground">
+            The university you are affiliated with.
+          </p>
+        </div>
+         <div className="space-y-2">
+          <Label>Profile Picture</Label>
+           <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={user.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user.username} data-ai-hint="profile" />
+              <AvatarFallback className="text-2xl">{getInitials(user.username)}</AvatarFallback>
+            </Avatar>
+            <ProfilePictureForm user={user} setUser={setUser} />
+          </div>
+        </div>
+        <Button type="submit">Update profile</Button>
+      </form>
+    </div>
+  )
+}
+
+function ProfilePictureForm({ user, setUser }) {
+  const { toast } = useToast();
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  useEffect(() => {
+    if (user?.profilePictureUrl) {
+      setPreviewUrl(user.profilePictureUrl);
+    }
+  }, [user]);
+
+  const handlePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePictureFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handlePictureUpdate = async (e) => {
     e.preventDefault();
     const userId = getUserId(user);
@@ -125,76 +183,29 @@ export default function SettingsPage() {
         title: "Success",
         description: "Profile picture updated successfully.",
       });
+      setProfilePictureFile(null); // Reset file input state
     } catch (error) {
       console.error("Failed to update profile picture", error);
     }
   };
 
+  return (
+     <form onSubmit={handlePictureUpdate} className="flex items-center gap-4">
+      <Input id="profilePicture" type="file" accept="image/*" onChange={handlePictureChange} className="max-w-xs" />
+      <Button type="submit" disabled={!profilePictureFile}>
+        {profilePictureFile ? 'Save' : 'Change'}
+      </Button>
+    </form>
+  )
+}
 
-  if (!user) {
-    return (
-      <AppLayout>
-        <div>Loading...</div>
-      </AppLayout>
-    );
-  }
 
+export default function SettingsPage() {
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Profile Picture</CardTitle>
-              <CardDescription>Update your avatar.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handlePictureUpdate} className="space-y-4">
-                <div className="flex justify-center">
-                    <Avatar className="h-40 w-40">
-                        <AvatarImage src={previewUrl || "https://placehold.co/100x100.png"} alt={user.username} data-ai-hint="profile" />
-                        <AvatarFallback className="text-5xl">{getInitials(user.username)}</AvatarFallback>
-                    </Avatar>
-                </div>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="profilePicture">New Picture</Label>
-                    <Input id="profilePicture" type="file" accept="image/*" onChange={handlePictureChange} />
-                </div>
-                <Button type="submit" disabled={!profilePictureFile}>Upload Picture</Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile Details</CardTitle>
-              <CardDescription>Update your personal information.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleProfileUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input id="username" name="username" value={formData.username} onChange={handleInputChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="universityName">University</Label>
-                  <Input id="universityName" name="universityName" value={formData.universityName} onChange={handleInputChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">New Password</Label>
-                  <Input id="password" name="password" type="password" placeholder="Leave blank to keep current password" value={formData.password} onChange={handleInputChange} />
-                </div>
-                <Button type="submit">Save Changes</Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <SettingsLayout>
+        <ProfileForm />
+      </SettingsLayout>
     </AppLayout>
   );
 }

@@ -20,16 +20,13 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
-import { Button } from "./ui/button";
 
 const menuItems = [
-  { href: "/home", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/workspace", label: "Workspace", icon: FolderKanban },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/settings", label: "Account", icon: Settings },
 ];
 
 export function AppLayout({ children }) {
@@ -62,37 +59,16 @@ export function AppLayout({ children }) {
             ))}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
-            {/* Footer items can be added here if needed */}
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex items-center justify-between p-4 border-b bg-card">
-            <div className="flex items-center gap-2">
-                <SidebarTrigger variant="ghost" size="icon">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        >
-                        <rect width="18" height="18" x="3" y="3" rx="2" />
-                        <path d="M9 3v18" />
-                    </svg>
-                    <span className="sr-only">Toggle Sidebar</span>
-                </SidebarTrigger>
-                <h2 className="text-lg font-semibold">
-                  {menuItems.find(item => pathname.startsWith(item.href))?.label || 'Page'}
-                </h2>
-            </div>
+        <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
+            <SidebarTrigger className="md:hidden" />
+             <div className="w-full flex-1">
+                {/* Potentially add breadcrumbs or search here */}
+             </div>
           <UserNav />
         </header>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background/95">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background/95">
           {children}
         </main>
       </SidebarInset>
