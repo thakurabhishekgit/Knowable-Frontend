@@ -27,6 +27,8 @@ export default function SingleDocumentPage() {
       if (id) {
         try {
           setLoading(true);
+          // First, fetch the document to get its details, including the workspace it belongs to.
+          // I'm assuming a GET /api/documents/{id} endpoint exists for this.
           const docData = await api.get(`/api/documents/${id}`);
           setDocument(docData);
         } catch (error) {
@@ -74,9 +76,13 @@ export default function SingleDocumentPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={`/workspace/${document.workspace.id}`}>
-                  {document.workspace.name}
-                </BreadcrumbLink>
+                {document.workspace ? (
+                   <BreadcrumbLink href={`/workspace/${document.workspace.id}`}>
+                    {document.workspace.name}
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbPage>Workspace</BreadcrumbPage>
+                )}
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
