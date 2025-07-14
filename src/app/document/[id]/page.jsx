@@ -11,6 +11,11 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { FileText } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatPanel } from "@/components/chat-panel";
@@ -103,24 +108,30 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <main className="container mx-auto p-4 md:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                    {documentViewerUrl ? (
-                        <iframe
-                            src={documentViewerUrl}
-                            className="w-full h-[100vh] border rounded-lg"
-                            title={document.title}
-                        ></iframe>
-                    ) : (
-                        <div className="w-full h-[100vh] flex items-center justify-center bg-muted border rounded-lg">
-                            <p className="text-muted-foreground">Document preview is not available.</p>
-                        </div>
-                    )}
-                </div>
-                <div className="h-[100vh]">
-                     <ChatPanel document={document} />
-                </div>
+        <main className="container mx-auto p-4 md:p-6 flex-1">
+            <div className="h-[100vh]">
+              <ResizablePanelGroup
+                direction="horizontal"
+                className="w-full h-full rounded-lg border"
+              >
+                <ResizablePanel defaultSize={75}>
+                  {documentViewerUrl ? (
+                      <iframe
+                          src={documentViewerUrl}
+                          className="w-full h-full"
+                          title={document.title}
+                      ></iframe>
+                  ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <p className="text-muted-foreground">Document preview is not available.</p>
+                      </div>
+                  )}
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={25}>
+                    <ChatPanel document={document} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </div>
         </main>
     </div>
