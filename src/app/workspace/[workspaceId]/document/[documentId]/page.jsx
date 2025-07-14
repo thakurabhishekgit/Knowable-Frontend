@@ -18,18 +18,16 @@ import { api } from "@/lib/api";
 
 export default function SingleDocumentPage() {
   const params = useParams();
-  const { id } = params;
+  const { workspaceId, documentId } = params;
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDocument = async () => {
-      if (id) {
+      if (workspaceId && documentId) {
         try {
           setLoading(true);
-          // First, fetch the document to get its details, including the workspace it belongs to.
-          // I'm assuming a GET /api/documents/{id} endpoint exists for this.
-          const docData = await api.get(`/api/documents/${id}`);
+          const docData = await api.get(`/api/documents/workspace/${workspaceId}/document/${documentId}`);
           setDocument(docData);
         } catch (error) {
           console.error("Failed to fetch document", error);
@@ -39,7 +37,7 @@ export default function SingleDocumentPage() {
       }
     };
     fetchDocument();
-  }, [id]);
+  }, [workspaceId, documentId]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
