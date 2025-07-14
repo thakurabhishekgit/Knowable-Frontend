@@ -73,7 +73,9 @@ export function PreviousPaperDialog({ children, document }) {
         // Reset form and close dialog
         setSubjectName('');
         setFile(null);
-        document.getElementById('paper-file-input').value = '';
+        if (window.document.getElementById('paper-file-input')) {
+            window.document.getElementById('paper-file-input').value = '';
+        }
         setOpen(false);
     } catch (error) {
         console.error("Failed to process previous paper:", error);
