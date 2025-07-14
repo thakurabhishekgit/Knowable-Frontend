@@ -51,7 +51,7 @@ export default function SettingsPage() {
         username: parsedUser.username || '',
         email: parsedUser.email || '',
         universityName: parsedUser.universityName || '',
-        password: '' // Password field should be empty for security
+        password: ''
       });
       setPreviewUrl(parsedUser.profilePictureUrl);
     }
@@ -78,7 +78,6 @@ export default function SettingsPage() {
         return;
     }
 
-    // Payload only includes fields the backend endpoint handles.
     const payload = {
         username: formData.username,
         email: formData.email,
@@ -115,12 +114,9 @@ export default function SettingsPage() {
     pictureFormData.append('profilePicture', profilePictureFile);
 
     try {
-      // The API returns the complete updated user object
       const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${userId}`, pictureFormData);
       
-      // Store the complete, fresh user object from the API response
       localStorage.setItem('user', JSON.stringify(updatedUserWithPic));
-
       setUser(updatedUserWithPic);
       setPreviewUrl(updatedUserWithPic.profilePictureUrl);
       window.dispatchEvent(new Event('storage'));
