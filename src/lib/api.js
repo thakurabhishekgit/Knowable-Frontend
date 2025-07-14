@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 const getApiUrl = () => {
@@ -9,8 +10,8 @@ const getApiUrl = () => {
 const handleResponse = async (response) => {
   if (response.ok) {
     try {
-        const data = await response.json();
-        return data;
+        const text = await response.text();
+        return text ? JSON.parse(text) : {};
     } catch (e) {
         // The response was successful, but didn't have a JSON body.
         return {};
@@ -18,33 +19,32 @@ const handleResponse = async (response) => {
   } else {
     let errorMessage = `An error occurred: ${response.statusText}`;
     const responseClone = response.clone(); // Clone the response to read body safely
+    const responseText = await response.text();
 
-    try {
-      // Try to parse a detailed JSON error response from the clone
-      const errorData = await responseClone.json();
-      console.error("API Error Response (JSON):", errorData);
-      
-      // Construct a detailed error message from the JSON payload
-      if (errorData.message) {
-        errorMessage = errorData.message;
-      } else if (errorData.error) {
-        errorMessage = errorData.error;
-      } else {
-        // Fallback to stringifying the whole object if specific fields aren't found
-        errorMessage = JSON.stringify(errorData);
-      }
+    if (responseText) {
+        try {
+            // Try to parse a detailed JSON error response from the clone
+            const errorData = await responseClone.json();
+            console.error("API Error Response (JSON):", errorData);
+            
+            // Construct a detailed error message from the JSON payload
+            if (errorData.message) {
+                errorMessage = errorData.message;
+            } else if (errorData.error) {
+                errorMessage = errorData.error;
+            } else if (Object.keys(errorData).length > 0) {
+                // Fallback to stringifying the whole object if specific fields aren't found
+                errorMessage = JSON.stringify(errorData);
+            } else {
+                // If errorData is an empty object, use the raw text if available
+                errorMessage = responseText || `Error: ${response.statusText}`;
+            }
 
-    } catch (e) {
-      // If parsing as JSON fails, use the raw text from the original response
-      try {
-        const errorText = await response.text();
-        console.error("API Error Response (Text):", errorText);
-        if (errorText) {
-          errorMessage = errorText;
+        } catch (e) {
+            // If parsing as JSON fails, use the raw text from the original response
+            console.error("API Error Response (Text):", responseText);
+            errorMessage = responseText;
         }
-      } catch (textError) {
-        console.error("Could not read error response text.", textError);
-      }
     }
 
     toast({
