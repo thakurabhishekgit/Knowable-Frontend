@@ -153,7 +153,7 @@ export function ChatPanel({ document }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
-        <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-1" ref={scrollAreaRef}>
           {isHistoryLoading ? (
              <div className="flex items-center justify-center h-full">
                 <div className="text-center text-muted-foreground">
