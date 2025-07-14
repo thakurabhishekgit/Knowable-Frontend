@@ -26,6 +26,7 @@ export default function AnalysisReportPage() {
     const [analysis, setAnalysis] = useState(null);
     const [documentTitle, setDocumentTitle] = useState('Document');
     const [error, setError] = useState(null);
+    const [noOverlap, setNoOverlap] = useState(false);
 
     useEffect(() => {
         try {
@@ -39,7 +40,8 @@ export default function AnalysisReportPage() {
                 if (parsedResult.analysis && parsedResult.analysis.length > 0) {
                     setAnalysis(parsedResult);
                 } else {
-                    setError("The AI could not generate an analysis. This can happen if there's no overlap between the study material and the question paper.");
+                    // This is the specific case where the AI ran but found nothing.
+                    setNoOverlap(true);
                 }
                 sessionStorage.removeItem('paperAnalysisResult');
                 sessionStorage.removeItem('documentTitle');
@@ -62,6 +64,19 @@ export default function AnalysisReportPage() {
             </div>
         );
     }
+
+    if (noOverlap) {
+        return (
+             <div className="container mx-auto px-4 md:px-6 py-10 text-center">
+                <FileClock className="w-16 h-16 text-primary mx-auto mb-4" />
+                <h1 className="text-2xl font-bold mb-2">No Overlapping Topics Found</h1>
+                <p className="text-muted-foreground max-w-lg mx-auto">
+                    The AI could not generate an analysis. This usually happens when there is no significant overlap between the topics in your study material ("{documentTitle}") and the uploaded question paper.
+                </p>
+                <Button onClick={() => window.history.back()} className="mt-6">Go Back</Button>
+            </div>
+        )
+    }
     
     if (!analysis) {
         return (
@@ -79,7 +94,7 @@ export default function AnalysisReportPage() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href={`/document/${params.id}`}>
+                        <BreadcrumbLink href={`/document/${params.id}?workspaceId=${sessionStorage.getItem('workspaceIdForReport')}`}>
                             {documentTitle}
                         </BreadcrumbLink>
                     </BreadcrumbItem>

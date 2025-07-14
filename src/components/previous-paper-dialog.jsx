@@ -66,6 +66,11 @@ export function PreviousPaperDialog({ children, document }) {
         // Step 3: Store result and navigate
         sessionStorage.setItem('paperAnalysisResult', JSON.stringify(analysisResult));
         sessionStorage.setItem('documentTitle', document.title);
+        // Store workspaceId for breadcrumb link
+        if (document.workspace?.id) {
+            sessionStorage.setItem('workspaceIdForReport', document.workspace.id);
+        }
+
 
         toast({ title: "Analysis Complete!", description: "Redirecting to your analysis report." });
         router.push(`/analysis-report/${document.id}`);
