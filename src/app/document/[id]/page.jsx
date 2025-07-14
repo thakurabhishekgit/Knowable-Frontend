@@ -71,8 +71,8 @@ export default function SingleDocumentPage() {
   const documentViewerUrl = document.fileUrl ? `https://docs.google.com/gview?url=${encodeURIComponent(document.fileUrl)}&embedded=true` : '';
 
   return (
-    <div className="flex flex-col h-full">
-        <header className="container mx-auto px-4 md:px-6 py-4 border-b shrink-0">
+    <div>
+        <header className="container mx-auto px-4 md:px-6 py-4 border-b">
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>
@@ -103,21 +103,21 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0">
-            <div className="flex-1 h-full">
+        <div className="flex flex-col md:flex-row gap-4 p-4">
+            <div className="flex-1">
                 {documentViewerUrl ? (
                 <iframe
                     src={documentViewerUrl}
-                    className="w-full h-full border rounded-lg"
+                    className="w-full h-[100vh] border rounded-lg"
                     title={document.title}
                 ></iframe>
                 ) : (
-                <div className="w-full h-full border rounded-lg flex items-center justify-center bg-muted">
+                <div className="w-full h-[100vh] border rounded-lg flex items-center justify-center bg-muted">
                     <p className="text-muted-foreground">Document preview is not available.</p>
                 </div>
                 )}
             </div>
-            <div className="w-full md:w-1/3 lg:w-1/4 h-full">
+            <div className="w-full md:w-1/3 lg:w-1/4 h-[100vh]">
                 <ChatPanel document={document} />
             </div>
         </div>
