@@ -76,7 +76,7 @@ export default function SingleDocumentPage() {
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink href="/workspace">Workspaces</BreadcrumbLink>
+                    <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -94,9 +94,9 @@ export default function SingleDocumentPage() {
                 </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-2xl font-bold mt-2 flex items-center gap-3">
-                <FileText className="h-6 w-6 text-primary" />
-                {document.title}
+            <h1 className="text-2xl font-bold mt-2 flex items-center gap-3 truncate">
+                <FileText className="h-6 w-6 text-primary shrink-0" />
+                <span className="truncate">{document.title}</span>
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
                 Type: {document.fileType} | Uploaded: {formatDate(document.uploadedAt)}
@@ -127,4 +127,3 @@ export default function SingleDocumentPage() {
     </div>
   );
 }
-
