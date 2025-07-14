@@ -58,11 +58,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Login failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "Invalid email or password. Please try again.",
-      });
+      // The toast is already shown by the api handler, no need to show another one.
     }
   };
 

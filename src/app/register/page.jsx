@@ -53,11 +53,7 @@ export default function RegisterPage() {
       router.push("/");
     } catch (error) {
       console.error("Registration failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: error.message || "Could not create your account. Please try again.",
-      });
+      // The toast is already shown by the api handler, no need to show another one.
     }
   };
 
