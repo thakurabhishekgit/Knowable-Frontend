@@ -67,10 +67,11 @@ export const api = {
     return handleResponse(response);
   },
   put: async (endpoint, body) => {
+    const isFormData = body instanceof FormData;
     const response = await fetch(`${getApiUrl()}${endpoint}`, {
       method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(body),
+      headers: getHeaders(isFormData),
+      body: isFormData ? body : JSON.stringify(body),
     });
     return handleResponse(response);
   },

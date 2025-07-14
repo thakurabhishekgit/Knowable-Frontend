@@ -16,37 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { useState } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [profilePicture, setProfilePicture] = useState(null);
-
-  const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
 
     try {
-      const userPayload = {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        universityName: data.universityName,
-      };
-
-      const user = await api.post('/api/users/registerUser', userPayload);
-      
-      if (user && user.id && profilePicture) {
-        const pictureFormData = new FormData();
-        pictureFormData.append('profilePicture', profilePicture);
-        await api.post(`/api/users/uploadProfilePicture/${user.id}`, pictureFormData);
-      }
+      // The entire form, including the file, will be sent as multipart/form-data
+      await api.post('/api/users/registerUser', formData);
       
       toast({
         title: "Success",
@@ -101,8 +82,8 @@ export default function RegisterPage() {
               <Input id="password" name="password" type="password" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="profile-picture">Profile Picture (Optional)</Label>
-              <Input id="profile-picture" name="profilePicture" type="file" onChange={handleFileChange} accept="image/*" />
+              <Label htmlFor="profilePicture">Profile Picture (Optional)</Label>
+              <Input id="profilePicture" name="profilePicture" type="file" accept="image/*" />
             </div>
             <Button type="submit" className="w-full">
                 Create account
