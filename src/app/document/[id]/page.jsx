@@ -108,7 +108,7 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <main className="flex-1 p-4 min-h-0">
+        <main className="flex-1 p-4 min-h-0 h-[100vh]">
             <ResizablePanelGroup direction="horizontal" className="h-full w-full rounded-lg border">
                 <ResizablePanel defaultSize={70}>
                     <div className="flex h-full items-center justify-center p-0">
