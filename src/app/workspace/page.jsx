@@ -1,4 +1,3 @@
-import { AppLayout } from "@/components/app-layout";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -78,7 +77,7 @@ function ItemActions({ item }) {
 
 export default function WorkspacePage() {
   return (
-    <AppLayout>
+    <div className="container mx-auto px-4 md:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
             <h1 className="text-3xl font-bold">Workspace</h1>
@@ -164,6 +163,6 @@ export default function WorkspacePage() {
             </Card>
         ))}
       </div>
-    </AppLayout>
+    </div>
   );
 }

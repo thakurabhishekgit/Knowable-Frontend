@@ -1,12 +1,19 @@
 
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
+// This page now redirects to the profile settings page by default.
 export default function DashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/dashboard/profile");
+  }, [router]);
+  
   return (
-    <div className="p-4 md:p-6">
-      <h1 className="text-3xl font-bold tracking-tight mb-2">Dashboard</h1>
-      <p className="text-muted-foreground">Welcome to your Knowable.AI dashboard.</p>
-      {/* Dashboard content will go here */}
-    </div>
+      <div className="flex items-center justify-center h-full p-10">
+        <h1 className="text-2xl font-bold">Redirecting to settings...</h1>
+      </div>
   );
 }

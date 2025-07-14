@@ -27,13 +27,6 @@ export function UserNav() {
   const router = useRouter();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-  
-  useEffect(() => {
     const handleStorageChange = () => {
         const userData = localStorage.getItem("user");
         if (userData) {
@@ -43,6 +36,7 @@ export function UserNav() {
         }
     };
 
+    handleStorageChange(); // Initial load
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
@@ -53,8 +47,7 @@ export function UserNav() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
-    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('storage')); // Triggers re-render and user state update
     router.push("/");
   };
   
@@ -90,13 +83,13 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/settings">
+            <Link href="/dashboard/profile">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/settings">
+            <Link href="/dashboard">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>

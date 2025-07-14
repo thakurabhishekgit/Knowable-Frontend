@@ -29,6 +29,11 @@ function Footer() {
 export function AppLayout({ children }) {
   const pathname = usePathname();
 
+  // Do not render layout for login/register pages
+  if (pathname === "/" || pathname === "/register") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50">
