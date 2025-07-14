@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   FolderKanban,
   Settings,
+  Home,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -25,6 +26,7 @@ import { UserNav } from "@/components/user-nav";
 import { Button } from "./ui/button";
 
 const menuItems = [
+  { href: "/home", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/workspace", label: "Workspace", icon: FolderKanban },
 ];

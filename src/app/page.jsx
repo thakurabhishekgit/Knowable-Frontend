@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ export default function LoginPage() {
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full" asChild>
-              <Link href="/dashboard">Login</Link>
+              <Link href="/home">Login</Link>
             </Button>
             <Button variant="outline" className="w-full">
               Login with Google
