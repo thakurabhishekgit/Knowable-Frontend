@@ -1,9 +1,9 @@
 import { toast } from "@/hooks/use-toast";
 
 const getApiUrl = () => {
-  // In this setup, we make direct calls to the backend API.
+  // Hardcoding the backend URL to remove any ambiguity.
   // The backend server MUST have CORS configured to allow requests from the frontend's origin.
-  return process.env.NEXT_PUBLIC_API_URL || ""; 
+  return "http://localhost:2000"; 
 };
 
 const handleResponse = async (response) => {
