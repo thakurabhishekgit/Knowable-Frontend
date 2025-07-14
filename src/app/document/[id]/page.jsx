@@ -11,10 +11,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText } from "lucide-react";
 import { api } from "@/lib/api";
+import { ChatPanel } from "@/components/chat-panel";
 
 export default function SingleDocumentPage() {
   const params = useParams();
@@ -34,7 +33,7 @@ export default function SingleDocumentPage() {
           setDocument(docData);
         } catch (error) {
           console.error("Failed to fetch document", error);
-          setDocument(null); // Ensure document is null on error
+          setDocument(null);
         } finally {
           setLoading(false);
         }
@@ -70,54 +69,59 @@ export default function SingleDocumentPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/workspace">Workspaces</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                {document.workspace ? (
-                   <BreadcrumbLink href={`/workspace/${document.workspace.id}`}>
-                    {document.workspace.name}
-                  </BreadcrumbLink>
-                ) : (
-                  <BreadcrumbPage>Workspace</BreadcrumbPage>
-                )}
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{document.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h1 className="text-3xl font-bold mt-2 flex items-center gap-3">
-            <FileText className="h-8 w-8 text-primary" />
-            {document.title}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Type: {document.fileType} | Uploaded: {formatDate(document.uploadedAt)}
-          </p>
-        </div>
-      </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+        <header className="container mx-auto px-4 md:px-6 py-4 border-b">
+            <Breadcrumb>
+                <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink href="/workspace">Workspaces</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    {workspaceId ? (
+                    <BreadcrumbLink href={`/workspace/${workspaceId}`}>
+                        {document.workspace?.name || 'Workspace'}
+                    </BreadcrumbLink>
+                    ) : (
+                    <BreadcrumbPage>Workspace</BreadcrumbPage>
+                    )}
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>{document.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <h1 className="text-2xl font-bold mt-2 flex items-center gap-3">
+                <FileText className="h-6 w-6 text-primary" />
+                {document.title}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+                Type: {document.fileType} | Uploaded: {formatDate(document.uploadedAt)}
+            </p>
+        </header>
 
-      <div className="mt-8">
-        {/* The extracted text is no longer displayed, but is available in the 'document' state variable. */}
-        <Card>
-            <CardHeader>
-                <CardTitle>Document Details</CardTitle>
-                <CardDescription>
-                    Additional document information and actions will be displayed here.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground">The content of this document has been processed.</p>
-            </CardContent>
-        </Card>
-      </div>
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 overflow-hidden">
+            {/* Left side: Document Viewer */}
+            <div className="md:col-span-2 h-full">
+                {document.fileUrl ? (
+                <iframe
+                    src={document.fileUrl}
+                    className="w-full h-full border rounded-lg"
+                    title={document.title}
+                ></iframe>
+                ) : (
+                <div className="w-full h-full border rounded-lg flex items-center justify-center bg-muted">
+                    <p className="text-muted-foreground">Document preview is not available.</p>
+                </div>
+                )}
+            </div>
+
+            {/* Right side: Chat Panel */}
+            <div className="md:col-span-1 h-full">
+                <ChatPanel document={document} />
+            </div>
+        </div>
     </div>
   );
 }
