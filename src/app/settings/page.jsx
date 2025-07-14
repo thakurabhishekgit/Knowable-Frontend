@@ -89,14 +89,11 @@ export default function SettingsPage() {
     }
 
     try {
-      // The update endpoint should return the full updated user object
+      // The update endpoint returns the full updated user object
       const updatedUser = await api.put(`/api/users/updateUser/${userId}`, payload);
       
-      // Merge the new data with the old, ensuring token and other fields are preserved
-      const newUserData = { ...user, ...updatedUser };
-      
-      localStorage.setItem('user', JSON.stringify(newUserData));
-      setUser(newUserData);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
       window.dispatchEvent(new Event('storage')); // Notify other components of the change
       
       toast({
@@ -125,11 +122,9 @@ export default function SettingsPage() {
       // The endpoint should return the updated user object with the new picture URL
       const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${userId}`, pictureFormData);
       
-      const newUserData = { ...user, ...updatedUserWithPic };
-
-      localStorage.setItem('user', JSON.stringify(newUserData));
-      setUser(newUserData);
-      setPreviewUrl(newUserData.profilePictureUrl);
+      localStorage.setItem('user', JSON.stringify(updatedUserWithPic));
+      setUser(updatedUserWithPic);
+      setPreviewUrl(updatedUserWithPic.profilePictureUrl);
       window.dispatchEvent(new Event('storage'));
       
       toast({

@@ -35,10 +35,9 @@ export default function LoginPage() {
     try {
       const data = await api.post('/api/users/login', loginPayload);
       
-      if (data && data.token) {
+      if (data && data.user && data.token) {
         localStorage.setItem('token', data.token);
-        // Store the entire user object, which should include the id
-        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('user', JSON.stringify(data.user));
         
         toast({
             title: "Login Successful",
@@ -46,11 +45,12 @@ export default function LoginPage() {
         });
         router.push("/dashboard");
       } else {
-        throw new Error("Login failed: No token received");
+        throw new Error("Login failed: Invalid response from server");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      // The toast is already shown by the api handler, no need to show another one.
+      // The toast is already shown by the api handler if it's an API error.
+      // A generic error can be shown here for other cases.
     }
   };
 
