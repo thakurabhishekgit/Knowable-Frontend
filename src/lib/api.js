@@ -18,13 +18,14 @@ const handleResponse = async (response) => {
     }
   } else {
     let errorMessage = "An error occurred while fetching data.";
+    const responseClone = response.clone(); // Clone the response
     try {
-      // Try to parse the error response as JSON for more details
-      const errorData = await response.json();
+      // Try to parse the error response from the clone
+      const errorData = await responseClone.json();
       console.error("API Error Response:", errorData);
       errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
     } catch (e) {
-      // If parsing as JSON fails, use the raw text
+      // If parsing as JSON fails, use the raw text from the original response
       const errorText = await response.text();
       console.error("API Error Text:", errorText);
       errorMessage = errorText;
