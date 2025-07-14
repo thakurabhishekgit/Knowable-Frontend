@@ -105,7 +105,7 @@ export default function SingleDocumentPage() {
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 min-h-0">
             {/* Left side: Document Viewer */}
-            <div className="md:col-span-2 h-full min-h-0">
+            <div className="md:col-span-2 h-full">
                 {documentViewerUrl ? (
                 <iframe
                     src={documentViewerUrl}
@@ -120,11 +120,10 @@ export default function SingleDocumentPage() {
             </div>
 
             {/* Right side: Chat Panel */}
-            <div className="md:col-span-1 h-full min-h-0">
+            <div className="md:col-span-1 h-full">
                 <ChatPanel document={document} />
             </div>
         </div>
     </div>
   );
 }
-
