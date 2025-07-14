@@ -68,6 +68,8 @@ export default function SingleDocumentPage() {
     );
   }
 
+  const documentViewerUrl = document.fileUrl ? `https://docs.google.com/gview?url=${encodeURIComponent(document.fileUrl)}&embedded=true` : '';
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
         <header className="container mx-auto px-4 md:px-6 py-4 border-b">
@@ -104,9 +106,9 @@ export default function SingleDocumentPage() {
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 overflow-hidden">
             {/* Left side: Document Viewer */}
             <div className="md:col-span-2 h-full">
-                {document.fileUrl ? (
+                {documentViewerUrl ? (
                 <iframe
-                    src={document.fileUrl}
+                    src={documentViewerUrl}
                     className="w-full h-full border rounded-lg"
                     title={document.title}
                 ></iframe>
