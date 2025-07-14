@@ -23,11 +23,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
 
     try {
-      const response = await api.post('/api/users/login', { email: data.email, password: data.password });
+      const response = await api.post('/api/users/login', { email, password });
       if (response && response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response));
