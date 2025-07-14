@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,33 +36,14 @@ export default function RegisterPage() {
 
     try {
       // Step 1: Register the user with text data
-      const registerResponse = await fetch('/api/users/registerUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userPayload),
-      });
-
-      if (!registerResponse.ok) {
-        const errorText = await registerResponse.text();
-        throw new Error(errorText || 'Failed to register user.');
-      }
-
-      const registeredUser = await registerResponse.json();
+      const registeredUser = await api.post('/api/users/registerUser', userPayload);
 
       // Step 2: If there's a profile picture, upload it
       if (profilePictureFile && profilePictureFile.size > 0 && registeredUser && registeredUser.id) {
         const pictureFormData = new FormData();
         pictureFormData.append('profilePicture', profilePictureFile);
         
-        const pictureResponse = await fetch(`/api/users/uploadProfilePicture/${registeredUser.id}`, {
-          method: 'POST',
-          body: pictureFormData,
-        });
-
-        if (!pictureResponse.ok) {
-            const errorText = await pictureResponse.text();
-            throw new Error(errorText || 'Failed to upload profile picture.');
-        }
+        await api.post(`/api/users/uploadProfilePicture/${registeredUser.id}`, pictureFormData);
       }
       
       toast({

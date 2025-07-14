@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,31 +28,19 @@ export default function LoginPage() {
     const password = form.password.value;
 
     try {
-      const response = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.token) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data));
-          
-          toast({
-              title: "Login Successful",
-              description: "Welcome back!",
-          });
-          router.push("/home");
-        } else {
-          throw new Error("Login failed: No token received");
-        }
+      const data = await api.post('/api/users/login', { email, password });
+      
+      if (data && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+        
+        toast({
+            title: "Login Successful",
+            description: "Welcome back!",
+        });
+        router.push("/home");
       } else {
-        const errorData = await response.text();
-        throw new Error(errorData || "Login failed");
+        throw new Error("Login failed: No token received");
       }
     } catch (error) {
       console.error("Login failed:", error);
