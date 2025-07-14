@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { Loader2, BrainCircuit, FileQuestion, Copy, Check, Separator } from 'lucide-react';
+import { Loader2, BrainCircuit, FileQuestion, Copy, Check } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
