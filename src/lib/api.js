@@ -16,14 +16,25 @@ const handleResponse = async (response) => {
         return {};
     }
   } else {
-    const errorData = await response.text();
-    console.error("API Error:", errorData);
+    let errorMessage = "An error occurred while fetching data.";
+    try {
+      // Try to parse the error response as JSON for more details
+      const errorData = await response.json();
+      console.error("API Error Response:", errorData);
+      errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+    } catch (e) {
+      // If parsing as JSON fails, use the raw text
+      const errorText = await response.text();
+      console.error("API Error Text:", errorText);
+      errorMessage = errorText;
+    }
+
     toast({
         variant: "destructive",
         title: "API Error",
-        description: "An error occurred while fetching data. Please try again."
+        description: errorMessage,
     });
-    throw new Error(errorData || "An error occurred while fetching data.");
+    throw new Error(errorMessage);
   }
 };
 
