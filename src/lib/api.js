@@ -18,7 +18,6 @@ const handleResponse = async (response) => {
     }
   } else {
     let errorMessage = `An error occurred: ${response.statusText}`;
-    const responseClone = response.clone(); // Clone the response to read body safely
     
     try {
         const responseText = await response.text();
@@ -38,7 +37,7 @@ const handleResponse = async (response) => {
         }
     } catch (e) {
         // If parsing as JSON fails, or if there's no body, stick with the status text.
-        console.error("Could not parse API error response as JSON.");
+        console.error("Could not parse API error response as JSON. Falling back to status text.");
     }
 
     toast({
