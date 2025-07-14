@@ -18,6 +18,7 @@ import { api } from "@/lib/api";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const getInitials = (name = "") => {
+    if (!name) return "";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -84,8 +85,8 @@ export default function SettingsPage() {
     try {
       const updatedUser = await api.put(`/api/users/updateUser/${user.id}`, payload);
       
-      // We need to preserve the token from the original user object
-      const newUserData = { ...updatedUser, token: user.token };
+      // We need to preserve the token and profile picture URL from the original user object
+      const newUserData = { ...updatedUser, token: user.token, profilePictureUrl: user.profilePictureUrl };
       
       localStorage.setItem('user', JSON.stringify(newUserData));
       setUser(newUserData);
