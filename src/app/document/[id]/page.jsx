@@ -18,7 +18,7 @@ import { ChatPanel } from "@/components/chat-panel";
 export default function SingleDocumentPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { id: documentId } = params;
+  const documentId = params.id;
   const workspaceId = searchParams.get('workspaceId');
   
   const [document, setDocument] = useState(null);
