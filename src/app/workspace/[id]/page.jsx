@@ -37,7 +37,7 @@ export default function SingleWorkspacePage() {
         setLoading(true);
         const workspaceData = await api.get(`/api/workspace/${id}`);
         setWorkspace(workspaceData);
-        const documentsData = await api.get(`/api/documents/workspace/${id}`);
+        const documentsData = await api.get(`/api/documents/workspace/${id}/documents`);
         setDocuments(documentsData);
       } catch (error) {
         // Gracefully handle 404 for documents, which means there are none.
