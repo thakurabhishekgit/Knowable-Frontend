@@ -3,75 +3,47 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BrainCircuit,
-  LayoutDashboard,
-  FolderKanban,
-  Settings,
-  Home,
-} from "lucide-react";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { BrainCircuit } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/workspace", label: "Workspace", icon: FolderKanban },
-  { href: "/settings", label: "Account", icon: Settings },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/workspace", label: "Workspace" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export function AppLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2 p-2">
-            <BrainCircuit className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-semibold transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">Knowable.AI</h1>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.href)}
-                  tooltip={item.label}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
-            <SidebarTrigger className="md:hidden" />
-             <div className="w-full flex-1">
-                {/* Potentially add breadcrumbs or search here */}
-             </div>
-          <UserNav />
-        </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background/95">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex flex-col min-h-screen">
+      <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50">
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+          <BrainCircuit className="w-6 h-6 text-primary" />
+          <span className="text-lg">Knowable.AI</span>
+        </Link>
+        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "transition-colors hover:text-foreground",
+                pathname.startsWith(item.href) ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+            <UserNav />
+        </div>
+      </header>
+      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background/95">
+        {children}
+      </main>
+    </div>
   );
 }

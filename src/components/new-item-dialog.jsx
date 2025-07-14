@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -71,7 +72,7 @@ export function NewItemDialog({ children }) {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" className="bg-accent hover:bg-accent/90">Create Item</Button>
+          <Button type="submit">Create Item</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -8,13 +8,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { NewItemDialog } from "@/components/new-item-dialog";
-import { PlusCircle, FileText, Mail, School } from "lucide-react";
+import { PlusCircle, FileText } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -22,7 +18,6 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 const recentActivity = [
   { user: "Alex Doe", action: "updated", item: "Project Proposal", time: "2h ago", avatar: "https://placehold.co/100x100.png" },
@@ -47,24 +42,11 @@ const chartConfig = {
   },
 };
 
-const getInitials = (name = "") => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-};
-
 export default function DashboardPage() {
-  const [user, setUser] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
   }, []);
 
   if (!isMounted) {
