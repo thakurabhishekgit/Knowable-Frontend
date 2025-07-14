@@ -43,7 +43,7 @@ export default function LoginPage() {
             title: "Login Successful",
             description: "Welcome back!",
         });
-        router.push("/home");
+        router.push("/dashboard");
       } else {
         throw new Error("Login failed: No token received");
       }
