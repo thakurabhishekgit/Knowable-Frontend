@@ -37,15 +37,14 @@ export default function SingleWorkspacePage() {
         setLoading(true);
         const workspaceData = await api.get(`/api/workspace/${id}`);
         setWorkspace(workspaceData);
-        // Assuming there is an endpoint to get documents for a workspace
         const documentsData = await api.get(`/api/documents/workspace/${id}`);
         setDocuments(documentsData);
       } catch (error) {
-        // If the get documents call fails, we can assume there are none yet.
-        if (error.message.includes('404')) {
-          setDocuments([]);
+        // Gracefully handle 404 for documents, which means there are none.
+        if (error.message && error.message.toLowerCase().includes("not found")) {
+            setDocuments([]);
         } else {
-          console.error("Failed to fetch workspace or documents", error);
+            console.error("Failed to fetch workspace or documents", error);
         }
       } finally {
         setLoading(false);
