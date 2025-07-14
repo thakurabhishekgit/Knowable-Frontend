@@ -1,9 +1,10 @@
 import { toast } from "@/hooks/use-toast";
 
 const getApiUrl = () => {
-  // During development, the proxy will handle this.
-  // For production, the full URL might be needed if the API is on a different domain.
-  return ""; 
+  // During development, the proxy handles requests to the Next.js server,
+  // which then forwards them to the backend defined in next.config.js.
+  // In production, you would set NEXT_PUBLIC_API_URL to your deployed backend URL.
+  return process.env.NEXT_PUBLIC_API_URL || ""; 
 };
 
 const handleResponse = async (response) => {
