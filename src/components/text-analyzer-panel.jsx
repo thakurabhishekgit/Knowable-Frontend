@@ -3,10 +3,10 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown } from 'lucide-react';
+import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown, Search } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,25 +17,26 @@ import { analyzeText } from '@/ai/flows/text-analyzer-flow';
 import { useToast } from '@/hooks/use-toast';
 
 const analysisPrompts = [
-    { text: "Summarize", icon: BookText },
-    { text: "Explain Key Concepts", icon: Lightbulb },
+    { text: "Summarize this section", icon: BookText, task: "Summarize" },
+    { text: "Explain this concept", icon: Lightbulb, task: "Explain" },
 ];
 
-const translationLanguages = ["English", "Hindi", "Telugu"];
+const popularLanguages = ["Hindi", "Telugu", "Spanish", "French"];
 
-export function TextAnalyzerPanel() {
+export function TextAnalyzerPanel({ document }) {
     const { toast } = useToast();
-    const [inputText, setInputText] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState('');
-    const [selectedLanguage, setSelectedLanguage] = useState(translationLanguages[0]);
+    const [targetLanguage, setTargetLanguage] = useState('Hindi');
+    const [customLanguage, setCustomLanguage] = useState('');
 
-    const handleAnalysis = async (task) => {
-        if (!inputText.trim()) {
+    const handleAnalysis = async (task, options = {}) => {
+        if (!searchText.trim()) {
             toast({
                 variant: "destructive",
                 title: "Input Required",
-                description: "Please paste some text to analyze.",
+                description: "Please type the text or concept you want to analyze.",
             });
             return;
         }
@@ -43,8 +44,19 @@ export function TextAnalyzerPanel() {
         setIsLoading(true);
         setAnalysisResult('');
 
+        // Construct the full text for the AI to use
+        const fullTextContext = `
+            Based on the following document, find the section related to "${searchText}" and then perform the requested action.
+            Document Text:
+            ---
+            ${document.textExtracted}
+            ---
+        `;
+        
+        const finalTask = options.language ? `${task} ${options.language}` : task;
+
         try {
-            const result = await analyzeText({ text: inputText, task });
+            const result = await analyzeText({ text: fullTextContext, task: finalTask });
             setAnalysisResult(result);
         } catch (error) {
             console.error("Failed to analyze text:", error);
@@ -57,59 +69,73 @@ export function TextAnalyzerPanel() {
         }
     };
 
-    const handleTranslate = async () => {
-        await handleAnalysis(`Translate to ${selectedLanguage}`);
+    const handleTranslate = () => {
+        const lang = customLanguage.trim() || targetLanguage;
+        handleAnalysis('Translate this to', { language: lang });
     };
 
     return (
         <div className="h-full flex flex-col p-2 md:p-4 gap-4">
-            <Textarea
-                placeholder="Paste text here to analyze, summarize, or translate..."
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                className="flex-grow text-sm min-h-[150px]"
-                disabled={isLoading}
-            />
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Type a word or phrase from the document to analyze..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                />
+            </div>
+            
             <div className="flex flex-wrap items-center gap-2">
                 {analysisPrompts.map((prompt) => (
                     <Button
                         key={prompt.text}
                         variant="outline"
-                        onClick={() => handleAnalysis(prompt.text)}
-                        disabled={isLoading || !inputText.trim()}
+                        onClick={() => handleAnalysis(prompt.task)}
+                        disabled={isLoading || !searchText.trim()}
                         size="sm"
                     >
                         <prompt.icon className="w-4 h-4 mr-2" />
                         {prompt.text}
                     </Button>
                 ))}
-                <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" disabled={isLoading || !inputText.trim()}>
-                                {selectedLanguage}
-                                <ChevronDown className="w-4 h-4 ml-2" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {translationLanguages.map(lang => (
-                                <DropdownMenuItem key={lang} onSelect={() => setSelectedLanguage(lang)}>
-                                    {lang}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                        variant="outline"
-                        onClick={handleTranslate}
-                        disabled={isLoading || !inputText.trim()}
-                        size="sm"
-                    >
-                        <Languages className="w-4 h-4 mr-2" />
-                        Translate
-                    </Button>
-                </div>
             </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="min-w-[120px]" disabled={isLoading || !searchText.trim()}>
+                            Translate to: {customLanguage || targetLanguage}
+                            <ChevronDown className="w-4 h-4 ml-auto" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        {popularLanguages.map(lang => (
+                            <DropdownMenuItem key={lang} onSelect={() => { setTargetLanguage(lang); setCustomLanguage(''); }}>
+                                {lang}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <Input 
+                    placeholder="Or type a language..."
+                    value={customLanguage}
+                    onChange={(e) => setCustomLanguage(e.target.value)}
+                    className="h-9 text-sm flex-1 min-w-[150px]"
+                    disabled={isLoading || !searchText.trim()}
+                />
+                 <Button
+                    onClick={handleTranslate}
+                    disabled={isLoading || !searchText.trim()}
+                    size="icon"
+                    variant="outline"
+                >
+                    <Languages className="w-4 h-4" />
+                    <span className="sr-only">Translate</span>
+                </Button>
+            </div>
+            
             <div className="flex-1 min-h-0">
                 <Card className="h-full">
                     <CardHeader className="p-3 border-b">

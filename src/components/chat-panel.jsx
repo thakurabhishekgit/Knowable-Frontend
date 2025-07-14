@@ -34,7 +34,7 @@ export function ChatPanel({ document }) {
                <DocumentChat document={document} />
             </TabsContent>
             <TabsContent value="analyze" className="flex-1 overflow-auto mt-0">
-                <TextAnalyzerPanel />
+                <TextAnalyzerPanel document={document} />
             </TabsContent>
             <TabsContent value="text" className="flex-1 overflow-auto mt-0">
                 <DocumentTextViewer document={document} />
