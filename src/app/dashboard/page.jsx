@@ -8,9 +8,12 @@ import {
     CardTitle,
     CardDescription,
   } from "@/components/ui/card";
-import { Folder } from "lucide-react";
+import { Folder, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { api } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { NewWorkspaceDialog } from "@/components/new-workspace-dialog";
 
 const getInitials = (name = "") => {
     if (!name) return "";
@@ -29,15 +32,49 @@ const formatDate = (dateString) => {
 
 export default function DashboardPage() {
     const [user, setUser] = useState(null);
+    const [workspaces, setWorkspaces] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchWorkspaces = async (userId, token) => {
+        try {
+            const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
+            setWorkspaces(fetchedWorkspaces);
+
+            // Update user in local storage with fresh workspaces
+            const localUser = JSON.parse(localStorage.getItem('user'));
+            if(localUser) {
+                localUser.workspaces = fetchedWorkspaces;
+                localStorage.setItem('user', JSON.stringify(localUser));
+                 window.dispatchEvent(new Event('storage'));
+            }
+
+        } catch (error) {
+            console.error("Failed to fetch workspaces", error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
         const userData = localStorage.getItem("user");
+        const token = localStorage.getItem("token");
         if(userData) {
-            setUser(JSON.parse(userData));
+            const parsedUser = JSON.parse(userData);
+            setUser(parsedUser);
+            fetchWorkspaces(parsedUser.id, token);
+        } else {
+            setLoading(false);
         }
     }, [])
 
-  if (!user) {
+    const handleWorkspaceCreated = () => {
+        if(user){
+            fetchWorkspaces(user.id, localStorage.getItem('token'));
+        }
+    }
+
+
+  if (loading) {
     return <div>Loading...</div>
   }
 
@@ -66,16 +103,24 @@ export default function DashboardPage() {
             </Card>
         )}
 
-        <div className="space-y-0.5 mb-6">
-            <h2 className="text-2xl font-bold tracking-tight">Welcome, {user.username}!</h2>
-            <p className="text-muted-foreground">
-            Here are your knowledge workspaces.
-            </p>
+        <div className="flex items-center justify-between mb-6">
+            <div>
+                <h2 className="text-2xl font-bold tracking-tight">Welcome, {user?.username}!</h2>
+                <p className="text-muted-foreground">
+                Here are your knowledge workspaces.
+                </p>
+            </div>
+            <NewWorkspaceDialog onWorkspaceCreated={handleWorkspaceCreated}>
+              <Button>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                New Workspace
+              </Button>
+            </NewWorkspaceDialog>
         </div>
         
-        {user.workspaces && user.workspaces.length > 0 ? (
+        {workspaces && workspaces.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {user.workspaces.map((workspace) => (
+                {workspaces.map((workspace) => (
                     <Link href={`/workspace/${workspace.id}`} key={workspace.id}>
                         <Card className="hover:bg-muted/50 transition-colors">
                             <CardHeader>

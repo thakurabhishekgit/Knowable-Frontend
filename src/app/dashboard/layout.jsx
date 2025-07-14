@@ -2,13 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { LogOut, Folder, Edit } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { api } from "@/lib/api";
 
 const getInitials = (name = "") => {
     if (!name) return "";
@@ -21,14 +22,41 @@ const getInitials = (name = "") => {
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [user, setUser] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]);
+
+  const fetchWorkspaces = async (userId) => {
+    try {
+        const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
+        setWorkspaces(fetchedWorkspaces);
+         // Update user in local storage with fresh workspaces
+         const localUser = JSON.parse(localStorage.getItem('user'));
+         if(localUser) {
+             localUser.workspaces = fetchedWorkspaces;
+             localStorage.setItem('user', JSON.stringify(localUser));
+         }
+    } catch (error) {
+        console.error("Failed to fetch workspaces for sidebar", error);
+    }
+  }
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    const handleStorageChange = () => {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+            const parsedUser = JSON.parse(userData);
+            setUser(parsedUser);
+            if (parsedUser.id) {
+                fetchWorkspaces(parsedUser.id);
+            }
+        } else {
+            setUser(null);
+            setWorkspaces([]);
+        }
+    };
+    handleStorageChange();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleLogout = () => {
@@ -46,8 +74,8 @@ export default function DashboardLayout({ children }) {
              <div className="px-4 py-2">
                 <h3 className="mb-2 text-lg font-semibold tracking-tight">Workspaces</h3>
                 <div className="flex flex-col gap-1">
-                    {user?.workspaces && user.workspaces.length > 0 ? (
-                        user.workspaces.map((workspace) => (
+                    {workspaces && workspaces.length > 0 ? (
+                        workspaces.map((workspace) => (
                             <Link
                                 key={workspace.id}
                                 href={`/workspace/${workspace.id}`}
@@ -71,9 +99,6 @@ export default function DashboardLayout({ children }) {
                     href="/dashboard/settings"
                     className={cn(
                     buttonVariants({ variant: "ghost" }),
-                    pathname === "/dashboard/settings"
-                        ? "bg-muted hover:bg-muted"
-                        : "hover:bg-transparent hover:underline",
                     "justify-start gap-2"
                     )}
                 >
