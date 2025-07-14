@@ -15,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { api } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,26 +27,38 @@ export default function LoginPage() {
     const password = form.password.value;
 
     try {
-      const response = await api.post('/api/users/login', { email, password });
-      if (response && response.token) {
-        localStorage.setItem('token', response.token);
-        // Store user object separately
-        localStorage.setItem('user', JSON.stringify(response));
-        
-        toast({
-            title: "Login Successful",
-            description: "Welcome back!",
-        });
-        router.push("/home");
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data));
+          
+          toast({
+              title: "Login Successful",
+              description: "Welcome back!",
+          });
+          router.push("/home");
+        } else {
+          throw new Error("Login failed: No token received");
+        }
       } else {
-        throw new Error("Login failed: No token received");
+        const errorData = await response.text();
+        throw new Error(errorData || "Login failed");
       }
     } catch (error) {
       console.error("Login failed:", error);
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
+        description: error.message || "Invalid email or password. Please try again.",
       });
     }
   };

@@ -15,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { api } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,26 +24,44 @@ export default function RegisterPage() {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    const profilePictureFile = form.profilePicture.files[0];
+    const profilePictureFile = formData.get('profilePicture');
+
+    const userPayload = {
+      username: formData.get('username'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+      universityName: formData.get('universityName'),
+    };
 
     try {
       // Step 1: Register the user with text data
-      const userPayload = {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        universityName: data.universityName,
-      };
+      const registerResponse = await fetch('/api/users/registerUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userPayload),
+      });
 
-      const registeredUser = await api.post('/api/users/registerUser', userPayload);
+      if (!registerResponse.ok) {
+        const errorText = await registerResponse.text();
+        throw new Error(errorText || 'Failed to register user.');
+      }
+
+      const registeredUser = await registerResponse.json();
 
       // Step 2: If there's a profile picture, upload it
-      if (profilePictureFile && registeredUser && registeredUser.id) {
+      if (profilePictureFile && profilePictureFile.size > 0 && registeredUser && registeredUser.id) {
         const pictureFormData = new FormData();
         pictureFormData.append('profilePicture', profilePictureFile);
         
-        await api.post(`/api/users/uploadProfilePicture/${registeredUser.id}`, pictureFormData);
+        const pictureResponse = await fetch(`/api/users/uploadProfilePicture/${registeredUser.id}`, {
+          method: 'POST',
+          body: pictureFormData,
+        });
+
+        if (!pictureResponse.ok) {
+            const errorText = await pictureResponse.text();
+            throw new Error(errorText || 'Failed to upload profile picture.');
+        }
       }
       
       toast({
@@ -57,7 +74,7 @@ export default function RegisterPage() {
       toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: "Could not create your account. Please try again.",
+        description: error.message || "Could not create your account. Please try again.",
       });
     }
   };
