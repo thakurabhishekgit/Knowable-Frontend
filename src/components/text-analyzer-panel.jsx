@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown } from 'lucide-react';
+import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown, Repeat } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import {
@@ -45,7 +45,11 @@ export function TextAnalyzerPanel({ document }) {
         setIsLoading(true);
         setAnalysisResult('');
         
-        const finalTask = options.language ? `${task} to ${options.language}` : task;
+        let finalTask = task;
+        if (task === 'Translate') {
+            finalTask = `Translate to ${options.language}`;
+        }
+
 
         try {
             const result = await analyzeText({ text: inputText, task: finalTask });
@@ -63,7 +67,7 @@ export function TextAnalyzerPanel({ document }) {
 
     const handleTranslate = () => {
         const lang = customLanguage.trim() || targetLanguage;
-        handleAnalysis('Translate this', { language: lang });
+        handleAnalysis('Translate', { language: lang });
     };
 
     return (
@@ -89,6 +93,15 @@ export function TextAnalyzerPanel({ document }) {
                         {prompt.text}
                     </Button>
                 ))}
+                 <Button
+                    variant="outline"
+                    onClick={() => handleAnalysis("Transliterate to Hinglish")}
+                    disabled={isLoading || !inputText.trim()}
+                    size="sm"
+                >
+                    <Repeat className="w-4 h-4 mr-2" />
+                    Transliterate
+                </Button>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -116,7 +129,7 @@ export function TextAnalyzerPanel({ document }) {
                 />
                  <Button
                     onClick={handleTranslate}
-                    disabled={isLoading || !inputText.trim()}
+                    disabled={isLoading || !inputText.trim() || !(customLanguage || targetLanguage)}
                     size="icon"
                     variant="outline"
                 >

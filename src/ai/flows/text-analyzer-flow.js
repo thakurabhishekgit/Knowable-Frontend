@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 const AnalyzeTextInputSchema = z.object({
     text: z.string().describe('The text snippet to analyze.'),
-    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to Hindi").'),
+    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to Hindi", "Transliterate to Hinglish").'),
 });
 
 const analyzeTextFlow = ai.defineFlow(
@@ -23,9 +23,11 @@ const analyzeTextFlow = ai.defineFlow(
   async (input) => {
     try {
       const llmResponse = await ai.generate({
-        prompt: `You are an expert academic assistant. Your task is to perform the following action on the provided text snippet: "${input.task}".
+        prompt: `You are an expert academic and language assistant. Your task is to perform the following action on the provided text snippet: "${input.task}".
 
-        Keep your response concise and directly related to the user's request. If you are translating, only provide the translated text.
+        - If you are translating, only provide the translated text.
+        - If you are asked to "Transliterate to Hinglish", convert the Hindi text from the Devanagari script to the Roman alphabet (English letters) while preserving the Hindi pronunciation and meaning. For example, "नमस्ते दुनिया" would become "Namaste Duniya".
+        - For all other tasks, keep your response concise and directly related to the user's request.
 
         Text Snippet:
         ---
