@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -40,7 +41,6 @@ export default function SingleWorkspacePage() {
         const documentsData = await api.get(`/api/documents/workspace/${id}/documents`);
         setDocuments(documentsData);
       } catch (error) {
-        // Gracefully handle 404 for documents, which means there are none.
         if (error.message && error.message.toLowerCase().includes("not found")) {
             setDocuments([]);
         } else {
@@ -127,22 +127,24 @@ export default function SingleWorkspacePage() {
             <h2 className="text-2xl font-semibold">Documents</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {documents.map((doc) => (
-                <Card key={doc.id}>
-                  <CardHeader>
-                    <div className="flex items-start gap-4">
-                      <FileText className="h-6 w-6 mt-1 text-primary" />
-                      <div>
-                        <CardTitle>{doc.title}</CardTitle>
-                        <CardDescription>{doc.fileType}</CardDescription>
+                <Link href={`/document/${doc.id}`} key={doc.id} className="block">
+                  <Card className="hover:bg-muted/50 transition-colors h-full">
+                    <CardHeader>
+                      <div className="flex items-start gap-4">
+                        <FileText className="h-6 w-6 mt-1 text-primary" />
+                        <div>
+                          <CardTitle>{doc.title}</CardTitle>
+                          <CardDescription>{doc.fileType}</CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-muted-foreground">
-                      Uploaded: {formatDate(doc.uploadedAt)}
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-sm text-muted-foreground">
+                        Uploaded: {formatDate(doc.uploadedAt)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>
