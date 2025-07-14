@@ -105,6 +105,15 @@ export const api = {
     });
     return handleResponse(response);
   },
+  patch: async (endpoint, body) => {
+    const isFormData = body instanceof FormData;
+    const response = await fetch(`${getApiUrl()}${endpoint}`, {
+        method: 'PATCH',
+        headers: getHeaders(isFormData),
+        body: isFormData ? body : JSON.stringify(body),
+    });
+    return handleResponse(response);
+  },
   delete: async (endpoint) => {
     const response = await fetch(`${getApiUrl()}${endpoint}`, {
       method: 'DELETE',

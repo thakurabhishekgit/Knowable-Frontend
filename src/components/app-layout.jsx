@@ -29,6 +29,7 @@ const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/workspace", label: "Workspace", icon: FolderKanban },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function AppLayout({ children }) {
@@ -62,14 +63,7 @@ export function AppLayout({ children }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton tooltip="Settings">
-                        <Settings />
-                        <span>Settings</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
+            {/* Footer items can be added here if needed */}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
