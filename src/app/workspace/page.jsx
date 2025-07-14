@@ -19,7 +19,17 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   PlusCircle,
   Clock,
@@ -38,8 +48,30 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
-function ItemActions({ item }) {
+function ItemActions({ item, userId, onWorkspaceDeleted }) {
+    const { toast } = useToast();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        if (!userId || !item.id) {
+            toast({ variant: "destructive", title: "Error", description: "Cannot delete workspace. User or Workspace ID is missing." });
+            return;
+        }
+        setIsDeleting(true);
+        try {
+            await api.delete(`/api/workspace/user/${userId}/workspace/${item.id}`);
+            toast({ title: "Success", description: "Workspace deleted successfully." });
+            onWorkspaceDeleted();
+        } catch (error) {
+            console.error("Failed to delete workspace:", error);
+            // Toast is already handled by the API wrapper
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -60,10 +92,32 @@ function ItemActions({ item }) {
                     </DropdownMenuItem>
                 </VersionHistorySheet>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    <span>Delete</span>
-                </DropdownMenuItem>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                            className="text-destructive"
+                            onSelect={(e) => e.preventDefault()} // Prevents dropdown from closing
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your
+                            workspace and all its contents.
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                            {isDeleting ? "Deleting..." : "Continue"}
+                        </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </DropdownMenuContent>
         </DropdownMenu>
     )
@@ -98,7 +152,7 @@ export default function WorkspacePage() {
     }
   }, []);
 
-  const handleWorkspaceCreated = () => {
+  const handleWorkspaceAction = () => {
     if (user?.id) {
         fetchWorkspaces(user.id);
     }
@@ -121,7 +175,7 @@ export default function WorkspacePage() {
             <h1 className="text-3xl font-bold">Workspaces</h1>
             <p className="text-muted-foreground">Manage all your knowledge workspaces.</p>
         </div>
-        <NewWorkspaceDialog onWorkspaceCreated={handleWorkspaceCreated}>
+        <NewWorkspaceDialog onWorkspaceCreated={handleWorkspaceAction}>
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">New Workspace</span>
@@ -164,7 +218,7 @@ export default function WorkspacePage() {
                         </TableCell>
                         <TableCell>{formatDate(workspace.createdAt)}</TableCell>
                         <TableCell className="text-right">
-                            <ItemActions item={workspace} />
+                            <ItemActions item={workspace} userId={user?.id} onWorkspaceDeleted={handleWorkspaceAction} />
                         </TableCell>
                     </TableRow>
                     ))}
@@ -184,7 +238,7 @@ export default function WorkspacePage() {
                                         <CardTitle className="text-base font-semibold">{workspace.name}</CardTitle>
                                     </div>
                                 </Link>
-                                <ItemActions item={workspace} />
+                                <ItemActions item={workspace} userId={user?.id} onWorkspaceDeleted={handleWorkspaceAction} />
                             </div>
                         </CardHeader>
                         <CardContent>
