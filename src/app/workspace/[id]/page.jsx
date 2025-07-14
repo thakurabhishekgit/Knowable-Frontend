@@ -21,31 +21,45 @@ import {
 import { Button } from "@/components/ui/button";
 import { NewItemDialog } from "@/components/new-item-dialog";
 import { VersionHistorySheet } from "@/components/version-history-sheet";
-import { Clock, Folder, PlusCircle } from "lucide-react";
+import { Clock, Folder, PlusCircle, FileText } from "lucide-react";
 import { api } from "@/lib/api";
 
 export default function SingleWorkspacePage() {
   const params = useParams();
   const { id } = params;
   const [workspace, setWorkspace] = useState(null);
+  const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchWorkspaceAndDocuments = async () => {
     if (id) {
-      const fetchWorkspace = async () => {
-        try {
-          setLoading(true);
-          const data = await api.get(`/api/workspace/${id}`);
-          setWorkspace(data);
-        } catch (error) {
-          console.error("Failed to fetch workspace", error);
-        } finally {
-          setLoading(false);
+      try {
+        setLoading(true);
+        const workspaceData = await api.get(`/api/workspace/${id}`);
+        setWorkspace(workspaceData);
+        // Assuming there is an endpoint to get documents for a workspace
+        const documentsData = await api.get(`/api/documents/workspace/${id}`);
+        setDocuments(documentsData);
+      } catch (error) {
+        // If the get documents call fails, we can assume there are none yet.
+        if (error.message.includes('404')) {
+          setDocuments([]);
+        } else {
+          console.error("Failed to fetch workspace or documents", error);
         }
-      };
-      fetchWorkspace();
+      } finally {
+        setLoading(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchWorkspaceAndDocuments();
   }, [id]);
+
+  const handleItemCreated = () => {
+    fetchWorkspaceAndDocuments(); // Re-fetch everything to get the new document
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -99,7 +113,7 @@ export default function SingleWorkspacePage() {
                         History
                     </Button>
                 </VersionHistorySheet>
-                <NewItemDialog>
+                <NewItemDialog workspaceId={id} onItemCreated={handleItemCreated}>
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         New Item
@@ -108,29 +122,38 @@ export default function SingleWorkspacePage() {
             </div>
         </div>
 
-        <Card className="mb-8">
-            <CardHeader>
-                <CardTitle>Workspace Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <p className="text-muted-foreground">ID</p>
-                        <p className="font-mono">{workspace.id}</p>
+      <div className="grid gap-8">
+        {documents && documents.length > 0 ? (
+          <div className="grid gap-6">
+            <h2 className="text-2xl font-semibold">Documents</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {documents.map((doc) => (
+                <Card key={doc.id}>
+                  <CardHeader>
+                    <div className="flex items-start gap-4">
+                      <FileText className="h-6 w-6 mt-1 text-primary" />
+                      <div>
+                        <CardTitle>{doc.title}</CardTitle>
+                        <CardDescription>{doc.fileType}</CardDescription>
+                      </div>
                     </div>
-                     <div>
-                        <p className="text-muted-foreground">Created At</p>
-                        <p>{formatDate(workspace.createdAt)}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-muted-foreground">
+                      Uploaded: {formatDate(doc.uploadedAt)}
                     </div>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* This will be where documents/notes are listed in the future */}
-        <div className="text-center py-10 border rounded-lg">
-            <h3 className="text-xl font-semibold">No items yet</h3>
-            <p className="text-muted-foreground mt-2">Get started by adding a document, note, or link.</p>
-        </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-16 border rounded-lg bg-card">
+              <h3 className="text-xl font-semibold">No items yet</h3>
+              <p className="text-muted-foreground mt-2">Get started by adding a document, note, or link.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
