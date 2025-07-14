@@ -22,24 +22,17 @@ const handleResponse = async (response) => {
     try {
         const responseText = await response.text();
         if (responseText) {
-            // Try to parse a detailed JSON error response
             const errorData = JSON.parse(responseText);
-            
-            // Construct a detailed error message
-            if (errorData.message) {
+            // Safely extract a simple string message and avoid stringifying the whole object
+            if (typeof errorData.message === 'string') {
                 errorMessage = errorData.message;
-            } else if (errorData.error) {
+            } else if (typeof errorData.error === 'string') {
                 errorMessage = errorData.error;
-            } else if (Object.keys(errorData).length > 0) {
-                const simpleError = JSON.stringify(errorData);
-                // Avoid showing complex non-stringifiable errors
-                if (simpleError !== '{}') {
-                   errorMessage = simpleError;
-                }
             }
         }
     } catch (e) {
-        // If parsing as JSON fails, or if there's no body, stick with the status text.
+        // If parsing the error response fails, we'll stick with the default status text message.
+        // This is safer than trying to process a complex, non-JSON error.
         console.error("Could not parse API error response as JSON. Falling back to status text.");
     }
 
