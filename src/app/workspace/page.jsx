@@ -1,3 +1,8 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,19 +18,17 @@ import {
     CardHeader,
     CardTitle,
     CardDescription,
-    CardFooter,
-  } from "@/components/ui/card";
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   PlusCircle,
-  FileText,
   Clock,
   Trash2,
   Edit,
   Folder,
-  MoreVertical
+  MoreVertical,
 } from "lucide-react";
-import { NewItemDialog } from "@/components/new-item-dialog";
+import { NewWorkspaceDialog } from "@/components/new-workspace-dialog";
 import { VersionHistorySheet } from "@/components/version-history-sheet";
 import {
     DropdownMenu,
@@ -33,15 +36,8 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu";
-
-const items = [
-  { name: "Project Phoenix Proposal", type: "Document", lastModified: "2 hours ago", icon: FileText, category: "Projects" },
-  { name: "Q3 Marketing Analytics", type: "Document", lastModified: "1 day ago", icon: FileText, category: "Marketing" },
-  { name: "Competitor Analysis", type: "Research", lastModified: "3 days ago", icon: Folder, category: "Research" },
-  { name: "Onboarding new members", type: "Document", lastModified: "5 days ago", icon: FileText, category: "Internal" },
-  { name: "UI/UX Inspiration", type: "Collection", lastModified: "1 week ago", icon: Folder, category: "Design" },
-];
+} from "@/components/ui/dropdown-menu";
+import { api } from "@/lib/api";
 
 function ItemActions({ item }) {
     return (
@@ -53,12 +49,10 @@ function ItemActions({ item }) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <NewItemDialog>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        <span>Edit</span>
-                    </DropdownMenuItem>
-                </NewItemDialog>
+                <DropdownMenuItem>
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Edit</span>
+                </DropdownMenuItem>
                 <VersionHistorySheet>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <Clock className="mr-2 h-4 w-4" />
@@ -76,93 +70,134 @@ function ItemActions({ item }) {
 }
 
 export default function WorkspacePage() {
+  const [workspaces, setWorkspaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  const fetchWorkspaces = async (userId) => {
+    try {
+        const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
+        setWorkspaces(fetchedWorkspaces);
+    } catch (error) {
+        console.error("Failed to fetch workspaces", error);
+    } finally {
+        setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      if (parsedUser.id) {
+        fetchWorkspaces(parsedUser.id);
+      }
+    } else {
+        setLoading(false);
+    }
+  }, []);
+
+  const handleWorkspaceCreated = () => {
+    if (user?.id) {
+        fetchWorkspaces(user.id);
+    }
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+  }
+
+  if (loading) {
+    return <div className="p-10">Loading workspaces...</div>
+  }
+
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-            <h1 className="text-3xl font-bold">Workspace</h1>
-            <p className="text-muted-foreground">Manage all your team's knowledge assets.</p>
+            <h1 className="text-3xl font-bold">Workspaces</h1>
+            <p className="text-muted-foreground">Manage all your knowledge workspaces.</p>
         </div>
-        <NewItemDialog>
+        <NewWorkspaceDialog onWorkspaceCreated={handleWorkspaceCreated}>
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">New Item</span>
+            <span className="hidden sm:inline">New Workspace</span>
             <span className="inline sm:hidden">New</span>
           </Button>
-        </NewItemDialog>
+        </NewWorkspaceDialog>
       </div>
 
-      {/* Desktop View - Table */}
-      <div className="hidden md:block border rounded-lg shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[40%]">Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Last Modified</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.name}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5 text-muted-foreground" />
-                    <span>{item.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{item.category}</Badge>
-                </TableCell>
-                <TableCell>{item.lastModified}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <NewItemDialog>
-                      <Button variant="ghost" size="icon" aria-label="Edit Item">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </NewItemDialog>
-                    <VersionHistorySheet>
-                      <Button variant="ghost" size="icon" aria-label="View Version History">
-                        <Clock className="h-4 w-4" />
-                      </Button>
-                    </VersionHistorySheet>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" aria-label="Delete Item">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {workspaces.length === 0 && !loading ? (
+        <div className="text-center py-10 border rounded-lg">
+            <h3 className="text-xl font-semibold">No workspaces yet</h3>
+            <p className="text-muted-foreground mt-2">Get started by creating a new workspace.</p>
+        </div>
+      ) : (
+        <>
+            {/* Desktop View - Table */}
+            <div className="hidden md:block border rounded-lg shadow-sm">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead className="w-[40%]">Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Created At</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {workspaces.map((workspace) => (
+                    <TableRow key={workspace.id}>
+                        <TableCell className="font-medium">
+                        <Link href={`/workspace/${workspace.id}`} className="hover:underline">
+                            <div className="flex items-center gap-3">
+                                <Folder className="h-5 w-5 text-muted-foreground" />
+                                <span>{workspace.name}</span>
+                            </div>
+                        </Link>
+                        </TableCell>
+                        <TableCell>
+                            <p className="text-muted-foreground truncate max-w-xs">{workspace.description}</p>
+                        </TableCell>
+                        <TableCell>{formatDate(workspace.createdAt)}</TableCell>
+                        <TableCell className="text-right">
+                            <ItemActions item={workspace} />
+                        </TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            </div>
 
-      {/* Mobile View - Cards */}
-      <div className="md:hidden grid gap-4">
-        {items.map((item) => (
-            <Card key={item.name}>
-                <CardHeader>
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                             <item.icon className="h-5 w-5 text-muted-foreground" />
-                            <CardTitle className="text-base font-semibold">{item.name}</CardTitle>
-                        </div>
-                        <ItemActions item={item} />
-                    </div>
-                    <CardDescription>
-                        <Badge variant="secondary">{item.category}</Badge>
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-sm text-muted-foreground">
-                        Last modified: {item.lastModified}
-                    </div>
-                </CardContent>
-            </Card>
-        ))}
-      </div>
+            {/* Mobile View - Cards */}
+            <div className="md:hidden grid gap-4">
+                {workspaces.map((workspace) => (
+                    <Card key={workspace.id}>
+                        <CardHeader>
+                            <div className="flex items-start justify-between">
+                                <Link href={`/workspace/${workspace.id}`} className="hover:underline">
+                                    <div className="flex items-center gap-3">
+                                        <Folder className="h-5 w-5 text-muted-foreground" />
+                                        <CardTitle className="text-base font-semibold">{workspace.name}</CardTitle>
+                                    </div>
+                                </Link>
+                                <ItemActions item={workspace} />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                             <CardDescription>{workspace.description}</CardDescription>
+                            <div className="text-sm text-muted-foreground mt-2">
+                                Created: {formatDate(workspace.createdAt)}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </>
+      )}
     </div>
   );
 }

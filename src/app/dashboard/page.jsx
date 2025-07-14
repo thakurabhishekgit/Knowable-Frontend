@@ -8,12 +8,10 @@ import {
     CardTitle,
     CardDescription,
   } from "@/components/ui/card";
-import { Folder, PlusCircle } from "lucide-react";
+import { Folder } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { NewWorkspaceDialog } from "@/components/new-workspace-dialog";
 
 const getInitials = (name = "") => {
     if (!name) return "";
@@ -35,12 +33,11 @@ export default function DashboardPage() {
     const [workspaces, setWorkspaces] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchWorkspaces = async (userId, token) => {
+    const fetchWorkspaces = async (userId) => {
         try {
             const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
             setWorkspaces(fetchedWorkspaces);
 
-            // Update user in local storage with fresh workspaces
             const localUser = JSON.parse(localStorage.getItem('user'));
             if(localUser) {
                 localUser.workspaces = fetchedWorkspaces;
@@ -57,29 +54,23 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const userData = localStorage.getItem("user");
-        const token = localStorage.getItem("token");
         if(userData) {
             const parsedUser = JSON.parse(userData);
             setUser(parsedUser);
-            fetchWorkspaces(parsedUser.id, token);
+            if (parsedUser.id) {
+                fetchWorkspaces(parsedUser.id);
+            }
         } else {
             setLoading(false);
         }
     }, [])
 
-    const handleWorkspaceCreated = () => {
-        if(user){
-            fetchWorkspaces(user.id, localStorage.getItem('token'));
-        }
+    if (loading) {
+        return <div className="p-10">Loading...</div>
     }
 
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  return (
-      <div>
+    return (
+      <div className="p-4 md:p-10">
         {user && (
             <Card className="mb-8">
                 <CardHeader>
@@ -110,12 +101,6 @@ export default function DashboardPage() {
                 Here are your knowledge workspaces.
                 </p>
             </div>
-            <NewWorkspaceDialog onWorkspaceCreated={handleWorkspaceCreated}>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                New Workspace
-              </Button>
-            </NewWorkspaceDialog>
         </div>
         
         {workspaces && workspaces.length > 0 ? (
