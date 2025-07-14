@@ -78,22 +78,23 @@ export default function SettingsPage() {
         return;
     }
 
-    // Payload should only contain fields the backend expects for this endpoint.
+    // Payload only includes fields the backend endpoint handles.
+    // The backend's updateUser method does not handle password changes.
     const payload = {
         username: formData.username,
         email: formData.email,
         universityName: formData.universityName,
     };
     
-    // DO NOT send password, as the backend endpoint doesn't handle it.
-
     try {
-      // The update endpoint returns the full updated user object
       const updatedUser = await api.put(`/api/users/updateUser/${userId}`, payload);
       
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      // Re-combine the updated user data with the token for local storage
+      const token = localStorage.getItem('token');
+      localStorage.setItem('user', JSON.stringify({ ...updatedUser, token }));
+
       setUser(updatedUser);
-      window.dispatchEvent(new Event('storage')); // Notify other components of the change
+      window.dispatchEvent(new Event('storage'));
       
       toast({
         title: "Success",
@@ -118,10 +119,12 @@ export default function SettingsPage() {
     pictureFormData.append('profilePicture', profilePictureFile);
 
     try {
-      // The endpoint should return the updated user object with the new picture URL
       const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${userId}`, pictureFormData);
       
-      localStorage.setItem('user', JSON.stringify(updatedUserWithPic));
+      // Re-combine the updated user data with the token for local storage
+      const token = localStorage.getItem('token');
+      localStorage.setItem('user', JSON.stringify({ ...updatedUserWithPic, token }));
+
       setUser(updatedUserWithPic);
       setPreviewUrl(updatedUserWithPic.profilePictureUrl);
       window.dispatchEvent(new Event('storage'));
