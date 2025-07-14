@@ -128,7 +128,7 @@ export default function SingleDocumentPage() {
                   )}
                 </ResizablePanel>
                 <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={35} minSize={25}>
+                <ResizablePanel defaultSize={35} minSize={30}>
                     <div className="h-full">
                         <ChatPanel document={document} />
                     </div>
