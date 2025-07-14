@@ -28,8 +28,17 @@ export default function LoginPage() {
     const password = form.password.value;
 
     const loginPayload = {
+      id: 0,
+      username: "",
       email: email,
       password: password,
+      profilePicture: null,
+      profilePictureUrl: "",
+      universityName: "",
+      createdAt: null,
+      updatedAt: null,
+      workspaces: [],
+      token: "",
     };
 
     try {
