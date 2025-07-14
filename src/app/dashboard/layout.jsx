@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { LayoutDashboard, Settings, LogOut, Folder, Edit } from "lucide-react";
+import { LogOut, Folder, Edit } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,6 +18,12 @@ const getInitials = (name = "") => {
       .join("")
       .toUpperCase();
 };
+
+const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -45,7 +51,7 @@ export default function DashboardLayout({ children }) {
           <nav className="flex flex-col space-y-4">
             {user && (
                 <div className="px-4 mb-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 mb-4">
                          <Avatar className="h-12 w-12">
                             <AvatarImage src={user.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user.username} data-ai-hint="profile" />
                             <AvatarFallback className="text-xl">{getInitials(user.username)}</AvatarFallback>
@@ -54,6 +60,10 @@ export default function DashboardLayout({ children }) {
                             <p className="font-semibold text-lg">{user.username}</p>
                             <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
+                    </div>
+                     <div className="space-y-1 text-sm">
+                        {user.universityName && <p><span className="font-semibold">University:</span> {user.universityName}</p>}
+                        {user.createdAt && <p><span className="font-semibold">Member since:</span> {formatDate(user.createdAt)}</p>}
                     </div>
                 </div>
             )}
