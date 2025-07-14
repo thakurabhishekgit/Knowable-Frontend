@@ -71,8 +71,8 @@ export default function SingleDocumentPage() {
   const documentViewerUrl = document.fileUrl ? `https://docs.google.com/gview?url=${encodeURIComponent(document.fileUrl)}&embedded=true` : '';
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-        <header className="container mx-auto px-4 md:px-6 py-4 border-b">
+    <div className="flex flex-col h-full">
+        <header className="container mx-auto px-4 md:px-6 py-4 border-b shrink-0">
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>

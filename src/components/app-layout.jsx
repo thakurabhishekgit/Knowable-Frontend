@@ -47,10 +47,15 @@ export function AppLayout({ children }) {
     router.push("/");
     setIsMobileMenuOpen(false);
   };
+  
+  const isDocumentPage = pathname.startsWith('/document/');
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50">
+    <div className={cn(
+        "flex flex-col",
+        isDocumentPage ? "h-screen" : "min-h-screen"
+    )}>
+      <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50 shrink-0">
         
         {/* Mobile Menu */}
         <div className="md:hidden">
@@ -116,10 +121,10 @@ export function AppLayout({ children }) {
             <UserNav />
         </div>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 min-h-0">
         {children}
       </main>
-      <Footer />
+      {!isDocumentPage && <Footer />}
     </div>
   );
 }
