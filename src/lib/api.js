@@ -1,11 +1,9 @@
 import { toast } from "@/hooks/use-toast";
 
 const getApiUrl = () => {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (!url) {
-    throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined in the environment variables.");
-  }
-  return url;
+  // During development, the proxy will handle this.
+  // For production, the full URL might be needed if the API is on a different domain.
+  return ""; 
 };
 
 const handleResponse = async (response) => {
