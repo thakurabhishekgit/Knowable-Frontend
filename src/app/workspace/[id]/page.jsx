@@ -127,7 +127,7 @@ export default function SingleWorkspacePage() {
             <h2 className="text-2xl font-semibold">Documents</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {documents.map((doc) => (
-                <Link href={`/workspace/${id}/document/${doc.id}`} key={doc.id} className="block">
+                <Link href={`/document/${doc.id}?workspaceId=${id}`} key={doc.id} className="block">
                   <Card className="hover:bg-muted/50 transition-colors h-full">
                     <CardHeader>
                       <div className="flex items-start gap-4">

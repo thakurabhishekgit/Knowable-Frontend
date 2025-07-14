@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -18,7 +17,10 @@ import { api } from "@/lib/api";
 
 export default function SingleDocumentPage() {
   const params = useParams();
-  const { workspaceId, documentId } = params;
+  const searchParams = useSearchParams();
+  const { id: documentId } = params;
+  const workspaceId = searchParams.get('workspaceId');
+  
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,9 +33,12 @@ export default function SingleDocumentPage() {
           setDocument(docData);
         } catch (error) {
           console.error("Failed to fetch document", error);
+          setDocument(null); // Ensure document is null on error
         } finally {
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
     fetchDocument();
@@ -58,7 +63,7 @@ export default function SingleDocumentPage() {
   if (!document) {
     return (
       <div className="container mx-auto p-8">
-        Document not found. It may have been deleted.
+        Document not found. It may have been deleted or the link is incorrect.
       </div>
     );
   }
