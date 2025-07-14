@@ -6,14 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { BrainCircuit, Menu, LogOut } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/workspace", label: "Workspace" },
+  { href: "/workspace", label: "Workspaces" },
 ];
 
 function Footer() {
@@ -35,7 +35,11 @@ export function AppLayout({ children }) {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Do not render layout for login/register pages
+  useEffect(() => {
+    // Close mobile menu on route change
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   if (pathname === "/" || pathname === "/register") {
     return <>{children}</>;
   }
@@ -49,79 +53,81 @@ export function AppLayout({ children }) {
   };
   
   const isDocumentPage = pathname.startsWith('/document/');
+  const isResultsPage = pathname.startsWith('/results');
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-screen">
       <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50 shrink-0">
         
         {/* Mobile Menu */}
-        <div className="md:hidden">
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Open Menu</span>
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="md:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Open Menu</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col p-0">
+                <SheetHeader className="p-4 border-b">
+                     <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-left">
+                        <BrainCircuit className="w-6 h-6 text-primary" />
+                        <span className="text-lg">Knowable.AI</span>
+                    </Link>
+                </SheetHeader>
+                <nav className="grid gap-2 text-lg font-medium p-4">
+                    {menuItems.map((item) => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                            pathname.startsWith(item.href) ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        {item.label}
+                    </Link>
+                    ))}
+                </nav>
+                <div className="mt-auto p-4">
+                    <Separator className="mb-4" />
+                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-2 text-lg font-medium text-muted-foreground">
+                        <LogOut className="h-5 w-5" />
+                        <span>Logout</span>
                     </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="flex flex-col">
-                    <nav className="grid gap-6 text-lg font-medium mt-6">
-                        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-                            <BrainCircuit className="w-6 h-6 text-primary" />
-                            <span className="text-lg">Knowable.AI</span>
-                        </Link>
-                        {menuItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className={cn(
-                                "transition-colors hover:text-foreground",
-                                pathname.startsWith(item.href) ? "text-foreground" : "text-muted-foreground"
-                            )}
-                        >
-                            {item.label}
-                        </Link>
-                        ))}
-                    </nav>
-                    <div className="mt-auto">
-                        <Separator />
-                        <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-2 text-lg font-medium mt-4">
-                            <LogOut className="h-5 w-5" />
-                            <span>Logout</span>
-                        </Button>
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </div>
+                </div>
+            </SheetContent>
+        </Sheet>
         
         {/* Desktop Menu */}
-        <Link href="/dashboard" className="hidden md:flex items-center gap-2 font-semibold mr-6">
-          <BrainCircuit className="w-6 h-6 text-primary" />
-          <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
-        </Link>
-        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-foreground",
-                pathname.startsWith(item.href) ? "text-foreground" : "text-muted-foreground"
-              )}
-            >
-              {item.label}
+        <div className="flex items-center w-full">
+            <Link href="/dashboard" className="hidden md:flex items-center gap-2 font-semibold mr-6">
+                <BrainCircuit className="w-6 h-6 text-primary" />
+                <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
             </Link>
-          ))}
-        </nav>
-        
-        <div className="flex items-center gap-4 ml-auto md:gap-2 lg:gap-4">
-            <UserNav />
+            <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
+            {menuItems.map((item) => (
+                <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                    "transition-colors hover:text-foreground",
+                    pathname.startsWith(item.href) ? "text-foreground" : "text-muted-foreground"
+                )}
+                >
+                {item.label}
+                </Link>
+            ))}
+            </nav>
+            
+            <div className="flex items-center gap-4 ml-auto">
+                <UserNav />
+            </div>
         </div>
       </header>
-      <main className="flex-1 flex flex-col min-h-0">
+      <main className="flex-1 flex flex-col">
         {children}
       </main>
-      {!isDocumentPage && <Footer />}
+      {!(isDocumentPage || isResultsPage) && <Footer />}
     </div>
   );
 }

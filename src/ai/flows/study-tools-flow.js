@@ -12,6 +12,7 @@ import { z } from 'zod';
 const FlashcardSchema = z.object({
   term: z.string().describe('The key term, concept, or name.'),
   definition: z.string().describe('A concise and clear definition of the term.'),
+  elaboration: z.string().optional().describe('An optional example or further context to help understand the term.'),
 });
 
 const QuizQuestionSchema = z.object({
@@ -47,7 +48,7 @@ const generateStudyToolFlow = ai.defineFlow(
         ---
 
         Please generate ${input.toolType} based on the key information in the document.
-        - For flashcards, identify 10-15 key terms, concepts, or important names and provide concise definitions.
+        - For flashcards, identify 10-15 key terms. For each, provide a concise definition and an optional, brief elaboration or example to provide more context.
         - For a quiz, create 5-7 multiple-choice questions that test understanding of the main ideas. Each question should have 4 options and a clearly identified correct answer.
         `,
         model: 'googleai/gemini-2.0-flash',

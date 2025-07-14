@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { Loader2, BrainCircuit, FileQuestion, Copy, Check } from 'lucide-react';
+import { Loader2, BrainCircuit, FileQuestion, Copy, Check, Separator } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ const Flashcard = ({ card, index }) => {
         <div className="perspective-1000">
             <div 
                 className={cn(
-                    "relative w-full h-64 rounded-xl shadow-lg transition-transform duration-700 transform-style-3d cursor-pointer",
+                    "relative w-full h-80 rounded-xl shadow-lg transition-transform duration-700 transform-style-3d cursor-pointer",
                     isFlipped ? "rotate-y-180" : ""
                 )}
                 onClick={() => setIsFlipped(!isFlipped)}
@@ -38,9 +38,20 @@ const Flashcard = ({ card, index }) => {
                     <h3 className="text-xl md:text-2xl font-semibold text-center">{card.term}</h3>
                 </div>
                 {/* Back */}
-                <div className="absolute w-full h-full backface-hidden bg-secondary rotate-y-180 flex flex-col items-start justify-center p-6 rounded-xl">
-                    <p className="text-secondary-foreground/70 text-sm mb-2">Definition</p>
-                    <p className="text-secondary-foreground text-center text-base">{card.definition}</p>
+                <div className="absolute w-full h-full backface-hidden bg-secondary rotate-y-180 flex flex-col p-6 rounded-xl overflow-y-auto">
+                    <div className='text-left'>
+                        <p className="text-secondary-foreground/70 text-sm mb-1 font-semibold">Definition</p>
+                        <p className="text-secondary-foreground text-base mb-4">{card.definition}</p>
+                    </div>
+                    {card.elaboration && (
+                        <>
+                            <Separator className="bg-secondary-foreground/20 my-2"/>
+                            <div className='text-left mt-2'>
+                                <p className="text-secondary-foreground/70 text-sm mb-1 font-semibold">Elaboration</p>
+                                <p className="text-secondary-foreground text-base">{card.elaboration}</p>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
       </div>
@@ -51,6 +62,7 @@ const Flashcard = ({ card, index }) => {
 const Quiz = ({ quizData }) => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const { toast } = useToast();
   
     const handleAnswerChange = (questionIndex, answer) => {
       setSelectedAnswers(prev => ({ ...prev, [questionIndex]: answer }));
@@ -71,7 +83,7 @@ const Quiz = ({ quizData }) => {
             return `Question ${i+1}: ${q.question}\nOptions:\n${q.options.join('\n')}\nCorrect Answer: ${q.correctAnswer}\n\n`;
         }).join('');
         navigator.clipboard.writeText(text);
-        // Maybe add a toast here
+        toast({ title: "Copied!", description: "Quiz content copied to clipboard." });
     }
   
     return (
@@ -109,7 +121,7 @@ const Quiz = ({ quizData }) => {
             ))}
             <div className="flex justify-end gap-4 mt-8">
                 {isSubmitted ? (
-                    <Card className="p-4">
+                    <Card className="p-4 bg-muted">
                         <p className="font-bold text-lg">Your Score: {getScore()} / {quizData.length}</p>
                     </Card>
                 ) : (
@@ -199,7 +211,7 @@ export default function ResultsPage() {
             
             <main>
                 {toolType === 'flashcards' && data?.flashcards && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                        {data.flashcards.map((card, index) => <Flashcard key={index} card={card} index={index} />)}
                     </div>
                 )}

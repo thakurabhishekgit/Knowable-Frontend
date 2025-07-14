@@ -2,26 +2,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { LogOut, Folder, Edit } from "lucide-react";
+import { LogOut, User, Folder } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/lib/api";
-
-const getInitials = (name = "") => {
-    if (!name) return "";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-};
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
 
@@ -29,7 +20,6 @@ export default function DashboardLayout({ children }) {
     try {
         const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
         setWorkspaces(fetchedWorkspaces);
-         // Update user in local storage with fresh workspaces
          const localUser = JSON.parse(localStorage.getItem('user'));
          if(localUser) {
              localUser.workspaces = fetchedWorkspaces;
@@ -65,14 +55,19 @@ export default function DashboardLayout({ children }) {
     window.dispatchEvent(new Event('storage'));
     router.push("/");
   };
+  
+  const sidebarNavItems = [
+    { title: "Profile", href: "/dashboard/settings", icon: User },
+    // Add more items here if needed
+  ];
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-10">
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <aside className="-mx-4 lg:w-1/4">
-          <nav className="flex flex-col space-y-4">
+        <aside className="-mx-4 lg:w-1/5">
+          <nav className="flex flex-col space-y-2">
              <div className="px-4 py-2">
-                <h3 className="mb-2 text-lg font-semibold tracking-tight">Workspaces</h3>
+                <h3 className="mb-2 px-2 text-lg font-semibold tracking-tight">Workspaces</h3>
                 <div className="flex flex-col gap-1">
                     {workspaces && workspaces.length > 0 ? (
                         workspaces.map((workspace) => (
@@ -89,23 +84,30 @@ export default function DashboardLayout({ children }) {
                             </Link>
                         ))
                     ) : (
-                        <p className="text-sm text-muted-foreground">No workspaces yet.</p>
+                        <p className="px-2 text-sm text-muted-foreground">No workspaces yet.</p>
                     )}
                 </div>
             </div>
             <Separator />
-            <div className="flex flex-col space-y-1 px-2">
-                <Link
-                    href="/dashboard/settings"
-                    className={cn(
-                    buttonVariants({ variant: "ghost" }),
-                    "justify-start gap-2"
-                    )}
-                >
-                    <Edit className="h-4 w-4" />
-                    Update Profile
-                </Link>
-                <Button variant="ghost" onClick={handleLogout} className="justify-start gap-2 text-destructive hover:text-destructive">
+            <div className="px-4 py-2">
+                 <h3 className="mb-2 px-2 text-lg font-semibold tracking-tight">Settings</h3>
+                {sidebarNavItems.map((item) => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                        buttonVariants({ variant: "ghost" }),
+                        pathname === item.href
+                            ? "bg-muted hover:bg-muted"
+                            : "hover:bg-transparent hover:underline",
+                        "justify-start gap-2"
+                        )}
+                    >
+                       <item.icon className="h-4 w-4" />
+                       {item.title}
+                    </Link>
+                ))}
+                <Button variant="ghost" onClick={handleLogout} className="justify-start gap-2 w-full text-destructive hover:text-destructive">
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                 </Button>
