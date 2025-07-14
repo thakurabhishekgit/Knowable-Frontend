@@ -1,19 +1,18 @@
+
 'use server';
 /**
  * @fileOverview A Q&A flow for answering questions about a document.
  * 
  * - answerQuestion - A function that answers a question based on document text.
- * - AnswerQuestionInput - The input type for the answerQuestion function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-export const AnswerQuestionInputSchema = z.object({
+const AnswerQuestionInputSchema = z.object({
     documentText: z.string().describe('The full text content of the document.'),
     question: z.string().describe('The user\'s question about the document.'),
 });
-export const AnswerQuestionInput = AnswerQuestionInputSchema;
 
 export async function answerQuestion(input) {
   const answerQuestionFlow = ai.defineFlow(
