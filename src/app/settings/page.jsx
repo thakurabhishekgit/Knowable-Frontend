@@ -26,6 +26,25 @@ const getInitials = (name = "") => {
       .toUpperCase();
 };
 
+// Helper function to parse JWT token
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+
+const getUserIdFromToken = () => {
+    if (typeof window === 'undefined') return null;
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    const decodedToken = parseJwt(token);
+    return decodedToken?.userId || null;
+}
+
+
 export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState(null);
@@ -68,7 +87,11 @@ export default function SettingsPage() {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    if (!user || !user.id) return;
+    const userId = getUserIdFromToken();
+    if (!userId) {
+        toast({ variant: "destructive", title: "Authentication Error", description: "Could not find user ID. Please log in again." });
+        return;
+    }
 
     const payload = {
         username: formData.username,
@@ -76,21 +99,17 @@ export default function SettingsPage() {
         universityName: formData.universityName,
     };
     
-    // Only include the password if the user entered a new one
     if (formData.password) {
         payload.password = formData.password;
     }
 
-
     try {
-      const updatedUser = await api.put(`/api/users/updateUser/${user.id}`, payload);
+      const updatedUser = await api.put(`/api/users/updateUser/${userId}`, payload);
       
-      // We need to preserve the token and profile picture URL from the original user object
       const newUserData = { ...user, ...updatedUser };
       
       localStorage.setItem('user', JSON.stringify(newUserData));
       setUser(newUserData);
-      // Manually trigger storage event for UserNav to update
       window.dispatchEvent(new Event('storage'));
       toast({
         title: "Success",
@@ -103,21 +122,23 @@ export default function SettingsPage() {
 
   const handlePictureUpdate = async (e) => {
     e.preventDefault();
-    if (!profilePictureFile || !user || !user.id) return;
+    const userId = getUserIdFromToken();
+    if (!profilePictureFile || !userId) {
+        if (!userId) toast({ variant: "destructive", title: "Authentication Error", description: "Could not find user ID. Please log in again." });
+        return;
+    }
 
     const pictureFormData = new FormData();
     pictureFormData.append('profilePicture', profilePictureFile);
 
     try {
-      const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${user.id}`, pictureFormData);
-
-       // Merge the new picture URL with the existing user data to ensure consistency
+      const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${userId}`, pictureFormData);
+      
       const newUserData = { ...user, ...updatedUserWithPic };
 
       localStorage.setItem('user', JSON.stringify(newUserData));
       setUser(newUserData);
-      setPreviewUrl(newUserData.profilePictureUrl); // Update preview with the new final URL
-      // Manually trigger storage event for UserNav to update
+      setPreviewUrl(newUserData.profilePictureUrl);
       window.dispatchEvent(new Event('storage'));
       toast({
         title: "Success",
