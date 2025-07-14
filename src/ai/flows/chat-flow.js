@@ -23,17 +23,20 @@ export async function answerQuestion(input) {
     },
     async (input) => {
       const llmResponse = await ai.generate({
-        prompt: `You are an expert academic assistant. Your task is to answer questions based *only* on the provided document text. If the answer cannot be found in the text, state that clearly.
+        prompt: `You are an expert academic assistant. Your task is to answer the user's question based *only* on the provided document text. 
+        Provide only the direct answer as a string, without any introductory phrases or conversational filler. 
+        If the answer cannot be found in the text, state that clearly.
 
         Document Text:
         ---
         ${input.documentText}
         ---
 
-        Question: ${input.question}
-        
-        Answer:`,
+        Question: ${input.question}`,
         model: 'googleai/gemini-2.0-flash',
+        output: {
+          format: 'text'
+        }
       });
 
       return llmResponse.text;
