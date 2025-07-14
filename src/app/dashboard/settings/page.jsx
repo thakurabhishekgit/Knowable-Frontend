@@ -25,7 +25,7 @@ const getInitials = (name = "") => {
       .toUpperCase();
 };
 
-export default function ProfilePage() {
+export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -101,9 +101,15 @@ export default function ProfilePage() {
 
   return (
     <div className="grid gap-6">
+        <div className="space-y-0.5">
+            <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+            <p className="text-muted-foreground">
+            Manage your account settings and preferences.
+            </p>
+        </div>
       <Card>
         <CardHeader>
-          <CardTitle>Profile Details</CardTitle>
+          <CardTitle>Update Profile</CardTitle>
           <CardDescription>Update your public profile information.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -127,7 +133,7 @@ export default function ProfilePage() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Profile Picture</CardTitle>
+          <CardTitle>Update Profile Picture</CardTitle>
           <CardDescription>Change your avatar.</CardDescription>
         </CardHeader>
         <CardContent>

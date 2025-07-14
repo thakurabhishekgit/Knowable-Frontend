@@ -5,19 +5,19 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { User, Lock, LogOut } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const sidebarNavItems = [
   {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: User
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard
   },
   {
-    title: "Account Security",
-    href: "/dashboard/security",
-    icon: Lock
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings
   },
 ]
 
@@ -34,14 +34,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-10">
-      <div className="space-y-0.5 mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences.
-        </p>
-      </div>
-      <Separator />
-      <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0 mt-6">
+      <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
         <aside className="-mx-4 lg:w-1/5">
           <nav className="flex flex-col space-y-1">
             {sidebarNavItems.map((item) => (
