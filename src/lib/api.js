@@ -17,25 +17,43 @@ const handleResponse = async (response) => {
         return {};
     }
   } else {
-    let errorMessage = "An error occurred while fetching data.";
-    const responseClone = response.clone(); // Clone the response
+    let errorMessage = `An error occurred: ${response.statusText}`;
+    const responseClone = response.clone(); // Clone the response to read body safely
+
     try {
-      // Try to parse the error response from the clone
+      // Try to parse a detailed JSON error response from the clone
       const errorData = await responseClone.json();
-      console.error("API Error Response:", errorData);
-      errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+      console.error("API Error Response (JSON):", errorData);
+      
+      // Construct a detailed error message from the JSON payload
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      } else if (errorData.error) {
+        errorMessage = errorData.error;
+      } else {
+        // Fallback to stringifying the whole object if specific fields aren't found
+        errorMessage = JSON.stringify(errorData);
+      }
+
     } catch (e) {
       // If parsing as JSON fails, use the raw text from the original response
-      const errorText = await response.text();
-      console.error("API Error Text:", errorText);
-      errorMessage = errorText;
+      try {
+        const errorText = await response.text();
+        console.error("API Error Response (Text):", errorText);
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      } catch (textError) {
+        console.error("Could not read error response text.", textError);
+      }
     }
 
     toast({
         variant: "destructive",
-        title: "API Error",
+        title: `API Error (Status: ${response.status})`,
         description: errorMessage,
     });
+    
     throw new Error(errorMessage);
   }
 };
