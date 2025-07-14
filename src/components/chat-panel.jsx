@@ -114,7 +114,7 @@ export function ChatPanel({ document }) {
 
     } catch (error) {
         console.error("Failed to get answer from AI or save question:", error);
-        const errorMessageText = error.message.includes('overloaded')
+        const errorMessageText = error.message.toLowerCase().includes('overloaded')
             ? "The AI service is currently overloaded. Please try again in a moment."
             : "Sorry, I couldn't process that question. Please try again later.";
         
@@ -188,7 +188,7 @@ export function ChatPanel({ document }) {
                                 <p>{message.text}</p>
                             </div>
                         ) : (
-                            <p>{message.text}</p>
+                            <p className="text-sm md:text-base">{message.text}</p>
                         )}
                     </div>
                     {message.from === 'user' && (
