@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { NewItemDialog } from "@/components/new-item-dialog";
-import { PlusCircle, FileText } from "lucide-react";
+import { PlusCircle, FileText, User as UserIcon, Mail, School } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -23,6 +23,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { useEffect, useState } from "react";
 
 const recentActivity = [
   { user: "Alex Doe", action: "updated", item: "Project Proposal", time: "2h ago", avatar: "https://placehold.co/100x100.png" },
@@ -47,28 +48,57 @@ const chartConfig = {
   },
 };
 
+const getInitials = (name = "") => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+};
+
 export default function DashboardPage() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+
   return (
     <AppLayout>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Card className="lg:col-span-2 xl:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
-            <PlusCircle className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>Welcome, {user?.username || 'User'}!</CardTitle>
+            <CardDescription>Here's your profile information.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">New Item</div>
-            <p className="text-xs text-muted-foreground">
-              Quickly add a new document or note.
-            </p>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={user?.profilePictureUrl || "https://placehold.co/100x100.png"} alt={user?.username || "User"} data-ai-hint="profile" />
+                    <AvatarFallback className="text-2xl">{user ? getInitials(user.username) : "U"}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                    <p className="text-lg font-bold">{user?.username}</p>
+                    <p className="text-sm text-muted-foreground">Welcome to your dashboard</p>
+                </div>
+            </div>
+            <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span>{user?.email}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <School className="h-4 w-4 text-muted-foreground" />
+                    <span>{user?.universityName || 'University not set'}</span>
+                </div>
+            </div>
           </CardContent>
-          <CardFooter>
-            <NewItemDialog>
-              <Button className="w-full">Create New</Button>
-            </NewItemDialog>
-          </CardFooter>
         </Card>
-
+        
         <Card className="lg:col-span-2 xl:col-span-3">
           <CardHeader>
             <CardTitle>Knowledge Growth</CardTitle>
@@ -132,6 +162,25 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+        
+        <Card className="lg:col-span-3 xl:col-span-4">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
+                <PlusCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">New Item</div>
+                <p className="text-xs text-muted-foreground">
+                Quickly add a new document or note.
+                </p>
+            </CardContent>
+            <CardFooter>
+                <NewItemDialog>
+                <Button className="w-full">Create New</Button>
+                </NewItemDialog>
+            </CardFooter>
+        </Card>
+
       </div>
     </AppLayout>
   );
