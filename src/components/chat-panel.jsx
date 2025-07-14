@@ -6,10 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, User, Bot, Loader2, MessageSquare } from 'lucide-react';
-import { answerQuestion } from '@/ai/flows/chat-flow';
+import { Send, User, Bot, Loader2, MessageSquare, BookText, Lightbulb } from 'lucide-react';
+import { answerQuestion, generateSummary } from '@/ai/flows/chat-flow';
 import { api } from '@/lib/api';
 import { useToast } from "@/hooks/use-toast";
+
+const suggestionPrompts = [
+    {
+        icon: BookText,
+        text: 'Generate Summary',
+        action: 'summarize',
+    },
+    {
+        icon: Lightbulb,
+        text: 'Key Concepts',
+        action: 'concepts',
+    }
+];
 
 export function ChatPanel({ document }) {
   const { toast } = useToast();
@@ -57,14 +70,9 @@ export function ChatPanel({ document }) {
     fetchChatHistory();
   }, [document?.id]);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '' || isLoading) return;
-
-    const userMessage = { text: input, from: 'user' };
+  const processRequest = async (question) => {
+    const userMessage = { text: question, from: 'user' };
     setMessages(prev => [...prev, userMessage]);
-    const currentQuestion = input;
-    setInput('');
     setIsLoading(true);
 
     // Add a temporary "thinking" message
@@ -74,11 +82,22 @@ export function ChatPanel({ document }) {
         if (!document.textExtracted) {
             throw new Error("Document text is not available for chat.");
         }
-        const aiAnswer = await answerQuestion({
-            documentText: document.textExtracted,
-            question: currentQuestion,
-        });
-
+        
+        let aiAnswer;
+        if (question.toLowerCase() === 'generate summary') {
+            aiAnswer = await generateSummary({ documentText: document.textExtracted });
+        } else if (question.toLowerCase() === 'key concepts') {
+            aiAnswer = await answerQuestion({
+                documentText: document.textExtracted,
+                question: "What are the key concepts or main ideas in this document?",
+            });
+        } else {
+             aiAnswer = await answerQuestion({
+                documentText: document.textExtracted,
+                question: question,
+            });
+        }
+       
         const botMessage = { text: aiAnswer, from: 'bot' };
         
         // Replace the "thinking" message with the actual answer
@@ -86,7 +105,7 @@ export function ChatPanel({ document }) {
         
         // Save the question and answer to the backend
         await api.post(`/api/questions/document/${document.id}`, {
-            question: currentQuestion,
+            question: question,
             answer: aiAnswer
         });
 
@@ -107,6 +126,19 @@ export function ChatPanel({ document }) {
     } finally {
         setIsLoading(false);
     }
+  }
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (input.trim() === '' || isLoading) return;
+    const currentQuestion = input;
+    setInput('');
+    await processRequest(currentQuestion);
+  };
+
+  const handleSuggestionClick = async (promptText) => {
+    if (isLoading) return;
+    await processRequest(promptText);
   };
 
   return (
@@ -165,11 +197,25 @@ export function ChatPanel({ document }) {
                 ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-                <div className="text-center text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="text-muted-foreground mb-6">
                     <MessageSquare className="w-10 h-10 mx-auto mb-2" />
                     <p>No messages yet.</p>
-                    <p className="text-xs">Ask a question to start the conversation.</p>
+                    <p className="text-xs">Ask a question or use a suggestion to start.</p>
+                </div>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-sm'>
+                    {suggestionPrompts.map((prompt, index) => (
+                        <Button 
+                            key={index} 
+                            variant="outline" 
+                            className="justify-start text-left h-auto"
+                            onClick={() => handleSuggestionClick(prompt.text)}
+                            disabled={isLoading}
+                        >
+                            <prompt.icon className="w-4 h-4 mr-2 shrink-0" />
+                            <span>{prompt.text}</span>
+                        </Button>
+                    ))}
                 </div>
             </div>
           )}
