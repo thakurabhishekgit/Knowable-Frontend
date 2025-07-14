@@ -71,7 +71,7 @@ export default function SingleDocumentPage() {
   const documentViewerUrl = document.fileUrl ? `https://docs.google.com/gview?url=${encodeURIComponent(document.fileUrl)}&embedded=true` : '';
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
         <header className="container mx-auto px-4 md:px-6 py-4 border-b">
             <Breadcrumb>
                 <BreadcrumbList>
@@ -103,9 +103,9 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 min-h-0">
             {/* Left side: Document Viewer */}
-            <div className="md:col-span-2 h-full">
+            <div className="md:col-span-2 h-full min-h-0">
                 {documentViewerUrl ? (
                 <iframe
                     src={documentViewerUrl}
@@ -120,7 +120,7 @@ export default function SingleDocumentPage() {
             </div>
 
             {/* Right side: Chat Panel */}
-            <div className="md:col-span-1 h-full">
+            <div className="md:col-span-1 h-full min-h-0">
                 <ChatPanel document={document} />
             </div>
         </div>

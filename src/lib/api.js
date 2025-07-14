@@ -24,7 +24,6 @@ const handleResponse = async (response) => {
         if (responseText) {
             // Try to parse a detailed JSON error response
             const errorData = JSON.parse(responseText);
-            console.error("API Error Response (JSON):", errorData);
             
             // Construct a detailed error message
             if (errorData.message) {
@@ -32,7 +31,11 @@ const handleResponse = async (response) => {
             } else if (errorData.error) {
                 errorMessage = errorData.error;
             } else if (Object.keys(errorData).length > 0) {
-                errorMessage = JSON.stringify(errorData);
+                const simpleError = JSON.stringify(errorData);
+                // Avoid showing complex non-stringifiable errors
+                if (simpleError !== '{}') {
+                   errorMessage = simpleError;
+                }
             }
         }
     } catch (e) {

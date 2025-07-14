@@ -22,10 +22,12 @@ export function ChatPanel({ document }) {
   // Effect to scroll to the bottom when new messages are added
   useEffect(() => {
     if (scrollAreaRef.current?.children[0]) {
-      const scrollableView = scrollAreaRef.current.children[0];
+      const scrollableViewport = scrollAreaRef.current.children[1];
        setTimeout(() => {
-        scrollableView.scrollTop = scrollableView.scrollHeight;
-      }, 0);
+        if(scrollableViewport) {
+            scrollableViewport.scrollTop = scrollableViewport.scrollHeight;
+        }
+      }, 100);
     }
   }, [messages]);
 
@@ -69,6 +71,9 @@ export function ChatPanel({ document }) {
     setMessages(prev => [...prev, { text: 'Thinking...', from: 'bot', isLoading: true }]);
 
     try {
+        if (!document.textExtracted) {
+            throw new Error("Document text is not available for chat.");
+        }
         const aiAnswer = await answerQuestion({
             documentText: document.textExtracted,
             question: currentQuestion,
@@ -87,8 +92,13 @@ export function ChatPanel({ document }) {
 
     } catch (error) {
         console.error("Failed to get answer from AI or save question:", error);
-        const errorMessage = { text: "Sorry, I couldn't process that question. The AI service may be temporarily unavailable. Please try again later.", from: 'bot' };
+        const errorMessageText = error.message.includes('overloaded')
+            ? "The AI service is currently overloaded. Please try again in a moment."
+            : "Sorry, I couldn't process that question. Please try again later.";
+        
+        const errorMessage = { text: errorMessageText, from: 'bot' };
         setMessages(prev => prev.map(m => m.isLoading ? errorMessage : m));
+        
         toast({
             variant: "destructive",
             title: "Chat Error",
@@ -107,7 +117,7 @@ export function ChatPanel({ document }) {
           Chat with AI
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
+      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0">
         <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
           {isHistoryLoading ? (
              <div className="flex items-center justify-center h-full">
@@ -172,7 +182,7 @@ export function ChatPanel({ document }) {
             autoComplete="off"
             disabled={isLoading || isHistoryLoading}
           />
-          <Button type="submit" size="icon" disabled={isLoading || isHistoryLoading}>
+          <Button type="submit" size="icon" disabled={isLoading || isHistoryLoading || !input.trim()}>
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             <span className="sr-only">Send</span>
           </Button>
