@@ -54,6 +54,8 @@ export function UserNav() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    setUser(null);
+    window.dispatchEvent(new Event('storage'));
     router.push("/");
   };
   
