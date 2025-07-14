@@ -43,6 +43,7 @@ export default function RegisterPage() {
         const pictureFormData = new FormData();
         pictureFormData.append('profilePicture', profilePictureFile);
         
+        // Use the ID from the registration response to upload the picture
         await api.post(`/api/users/uploadProfilePicture/${registeredUser.id}`, pictureFormData);
       }
       

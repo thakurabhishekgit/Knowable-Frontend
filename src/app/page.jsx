@@ -37,6 +37,7 @@ export default function LoginPage() {
       
       if (data && data.token) {
         localStorage.setItem('token', data.token);
+        // Store the entire user object, which should include the id
         localStorage.setItem('user', JSON.stringify(data));
         
         toast({

@@ -26,24 +26,9 @@ const getInitials = (name = "") => {
       .toUpperCase();
 };
 
-// Helper function to parse JWT token
-const parseJwt = (token) => {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    return null;
-  }
-};
-
-
-const getUserIdFromToken = () => {
-    if (typeof window === 'undefined') return null;
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    const decodedToken = parseJwt(token);
-    return decodedToken?.userId || null;
+const getUserId = (user) => {
+    return user?.id || null;
 }
-
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -87,7 +72,7 @@ export default function SettingsPage() {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    const userId = getUserIdFromToken();
+    const userId = getUserId(user);
     if (!userId) {
         toast({ variant: "destructive", title: "Authentication Error", description: "Could not find user ID. Please log in again." });
         return;
@@ -104,13 +89,16 @@ export default function SettingsPage() {
     }
 
     try {
+      // The update endpoint should return the full updated user object
       const updatedUser = await api.put(`/api/users/updateUser/${userId}`, payload);
       
+      // Merge the new data with the old, ensuring token and other fields are preserved
       const newUserData = { ...user, ...updatedUser };
       
       localStorage.setItem('user', JSON.stringify(newUserData));
       setUser(newUserData);
-      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new Event('storage')); // Notify other components of the change
+      
       toast({
         title: "Success",
         description: "Profile updated successfully.",
@@ -122,9 +110,11 @@ export default function SettingsPage() {
 
   const handlePictureUpdate = async (e) => {
     e.preventDefault();
-    const userId = getUserIdFromToken();
-    if (!profilePictureFile || !userId) {
-        if (!userId) toast({ variant: "destructive", title: "Authentication Error", description: "Could not find user ID. Please log in again." });
+    const userId = getUserId(user);
+    if (!profilePictureFile) return;
+    
+    if (!userId) {
+        toast({ variant: "destructive", title: "Authentication Error", description: "Could not find user ID. Please log in again." });
         return;
     }
 
@@ -132,6 +122,7 @@ export default function SettingsPage() {
     pictureFormData.append('profilePicture', profilePictureFile);
 
     try {
+      // The endpoint should return the updated user object with the new picture URL
       const updatedUserWithPic = await api.patch(`/api/users/updateProfilePicture/${userId}`, pictureFormData);
       
       const newUserData = { ...user, ...updatedUserWithPic };
@@ -140,6 +131,7 @@ export default function SettingsPage() {
       setUser(newUserData);
       setPreviewUrl(newUserData.profilePictureUrl);
       window.dispatchEvent(new Event('storage'));
+      
       toast({
         title: "Success",
         description: "Profile picture updated successfully.",
