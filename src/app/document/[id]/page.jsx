@@ -103,7 +103,7 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0">
+        <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0" style={{ height: 'calc(100vh - 110px)' }}>
             <div className="flex-1 h-full">
                 {documentViewerUrl ? (
                 <iframe
