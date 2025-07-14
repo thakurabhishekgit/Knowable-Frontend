@@ -4,8 +4,9 @@
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layers, FileQuestion, GraduationCap } from 'lucide-react';
+import { Layers, FileQuestion, GraduationCap, FileClock } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { PreviousPaperDialog } from '@/components/previous-paper-dialog';
 
 export function StudyToolsPanel({ document }) {
     const router = useRouter();
@@ -37,7 +38,7 @@ export function StudyToolsPanel({ document }) {
     };
 
     return (
-        <div className="h-full flex flex-col p-4 md:p-6 gap-6">
+        <div className="h-full flex flex-col p-4 md:p-6 gap-6 overflow-y-auto">
             <div className="text-center">
                 <GraduationCap className="w-10 h-10 mx-auto text-primary mb-2" />
                 <h3 className="text-lg font-semibold">AI Study Tools</h3>
@@ -78,6 +79,25 @@ export function StudyToolsPanel({ document }) {
                         <Button className="mt-4 w-full" onClick={() => handleGenerate('quiz')}>
                             Create a Quiz
                         </Button>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-3">
+                           <FileClock className="w-6 h-6 text-primary" />
+                            <CardTitle className="text-base">Analyze Previous Paper</CardTitle>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <CardDescription>
+                           Upload a past paper to find important topics and expected questions.
+                        </CardDescription>
+                        <PreviousPaperDialog document={document}>
+                             <Button className="mt-4 w-full">
+                                Upload & Analyze Paper
+                            </Button>
+                        </PreviousPaperDialog>
                     </CardContent>
                 </Card>
             </div>

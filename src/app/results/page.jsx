@@ -15,20 +15,20 @@ import {
 } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { Loader2, BrainCircuit, FileQuestion, Copy, Check } from 'lucide-react';
+import { Loader2, BrainCircuit, FileQuestion, Copy } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 // Flashcard Component
-const Flashcard = ({ card, index }) => {
+const Flashcard = ({ card }) => {
     const [isFlipped, setIsFlipped] = useState(false);
   
     return (
-        <div className="perspective-1000">
+        <div className="perspective-1000 h-96">
             <div 
                 className={cn(
-                    "relative w-full h-80 rounded-xl shadow-lg transition-transform duration-700 transform-style-3d cursor-pointer",
+                    "relative w-full h-full rounded-xl shadow-lg transition-transform duration-700 transform-style-3d cursor-pointer",
                     isFlipped ? "rotate-y-180" : ""
                 )}
                 onClick={() => setIsFlipped(!isFlipped)}
@@ -48,7 +48,7 @@ const Flashcard = ({ card, index }) => {
                         <>
                             <Separator className="bg-secondary-foreground/20 my-2"/>
                             <div className='text-left mt-2'>
-                                <p className="text-secondary-foreground/70 text-sm mb-1 font-semibold">Elaboration</p>
+                                <p className="text-secondary-foreground/70 text-sm mb-1 font-semibold">Example / Elaboration</p>
                                 <p className="text-secondary-foreground text-base">{card.elaboration}</p>
                             </div>
                         </>
@@ -213,7 +213,7 @@ export default function ResultsPage() {
             <main>
                 {toolType === 'flashcards' && data?.flashcards && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                       {data.flashcards.map((card, index) => <Flashcard key={index} card={card} index={index} />)}
+                       {data.flashcards.map((card, index) => <Flashcard key={index} card={card} />)}
                     </div>
                 )}
                 {toolType === 'quiz' && data?.quiz && <Quiz quizData={data.quiz} />}
