@@ -76,7 +76,7 @@ export function TextAnalyzerPanel({ document }) {
                 placeholder="Copy text from the 'Text' tab and paste it here to analyze..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="flex-grow text-sm h-32 resize-none"
+                className="flex-grow text-sm min-h-[120px] resize-y"
                 disabled={isLoading}
             />
             
@@ -139,14 +139,14 @@ export function TextAnalyzerPanel({ document }) {
             </div>
             
             <div className="flex-1 min-h-0">
-                <Card className="h-full">
+                <Card className="h-full flex flex-col">
                     <CardHeader className="p-3 border-b">
                         <CardTitle className="text-base flex items-center gap-2">
                             <Sparkles className="w-5 h-5" />
                             Analysis Result
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0 h-[calc(100%-3.5rem)]">
+                    <CardContent className="p-0 flex-1">
                         <ScrollArea className="h-full">
                             <div className="p-4 text-sm whitespace-pre-wrap">
                                 {isLoading ? (
