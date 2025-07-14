@@ -130,6 +130,7 @@ export default function PreviousPapersPage() {
 
             if (questions.length === 0) {
                  toast({ variant: "destructive", title: "No Questions Found", description: "Could not automatically identify questions in the paper." });
+                 setIsAnalyzing(false); // Stop analyzing if no questions found
                  return;
             }
 
@@ -187,7 +188,7 @@ export default function PreviousPapersPage() {
                     </BreadcrumbItem>
                      <BreadcrumbSeparator />
                      <BreadcrumbItem>
-                        <BreadcrumbLink href={`/document/${document.id}`}>
+                        <BreadcrumbLink href={`/document/${document.id}?workspaceId=${document.workspace?.id}`}>
                             {document.title}
                         </BreadcrumbLink>
                     </BreadcrumbItem>
