@@ -106,11 +106,13 @@ export function ChatPanel({ document }) {
         // Replace the "thinking" message with the actual answer
         setMessages(prev => prev.map(m => m.isLoading ? botMessage : m));
         
-        // Save the question and answer to the backend
-        await api.post(`/api/questions/document/${document.id}`, {
-            question: question,
-            answer: aiAnswer
-        });
+        // Only save to backend if the answer wasn't an error message
+        if (!aiAnswer.toLowerCase().includes('error') && !aiAnswer.toLowerCase().includes('overloaded')) {
+             await api.post(`/api/questions/document/${document.id}`, {
+                question: question,
+                answer: aiAnswer
+            });
+        }
 
     } catch (error) {
         console.error("Failed to get answer from AI or save question:", error);
@@ -162,7 +164,7 @@ export function ChatPanel({ document }) {
                 </div>
             </div>
           ) : messages.length > 0 ? (
-            <div className="space-y-4 pr-2">
+            <div className="space-y-4">
                 {messages.map((message, index) => (
                 <div
                     key={index}
@@ -188,7 +190,7 @@ export function ChatPanel({ document }) {
                                 <p>{message.text}</p>
                             </div>
                         ) : (
-                            <p className="text-sm md:text-base">{message.text}</p>
+                            <p className="text-sm md:text-base whitespace-pre-wrap">{message.text}</p>
                         )}
                     </div>
                     {message.from === 'user' && (
