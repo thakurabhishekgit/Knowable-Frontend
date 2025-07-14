@@ -22,9 +22,9 @@ const answerQuestionFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await ai.generate({
-      prompt: `You are an expert academic assistant. Your task is to answer the user's question based *only* on the provided document text. 
-      Provide only the direct answer as a string, without any introductory phrases or conversational filler. 
-      If the answer cannot be found in the text, state that clearly.
+      prompt: `You are an expert academic assistant. Your primary task is to answer the user's question based on the provided document text. 
+      However, you can also use your general knowledge to provide more comprehensive answers, comparing or contrasting with the information in the document if relevant.
+      Provide the answer as a string, without any introductory phrases. If the answer cannot be found in the text and is not general knowledge, state that clearly.
 
       Document Text:
       ---
