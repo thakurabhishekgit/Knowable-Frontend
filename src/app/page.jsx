@@ -31,7 +31,9 @@ export default function LoginPage() {
       const response = await api.post('/api/users/login', { email, password });
       if (response && response.token) {
         localStorage.setItem('token', response.token);
+        // Store user object separately
         localStorage.setItem('user', JSON.stringify(response));
+        
         toast({
             title: "Login Successful",
             description: "Welcome back!",
