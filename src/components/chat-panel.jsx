@@ -147,12 +147,12 @@ export function ChatPanel({ document }) {
   return (
     <Card className="h-full flex flex-col border-0 shadow-none rounded-none">
       <CardHeader className="border-b">
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-base md:text-lg">
           <Bot className="w-6 h-6" />
           Chat with AI
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
+      <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-2 md:p-4">
         <ScrollArea className="flex-1" ref={scrollAreaRef}>
           {isHistoryLoading ? (
              <div className="flex items-center justify-center h-full">
@@ -162,21 +162,21 @@ export function ChatPanel({ document }) {
                 </div>
             </div>
           ) : messages.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-4 pr-2">
                 {messages.map((message, index) => (
                 <div
                     key={index}
-                    className={`flex items-start gap-3 ${
+                    className={`flex items-start gap-2 ${
                     message.from === 'user' ? 'justify-end' : ''
                     }`}
                 >
                     {message.from === 'bot' && (
-                    <div className="p-2 rounded-full bg-muted">
+                    <div className="p-2 rounded-full bg-muted shrink-0">
                         <Bot className="w-5 h-5" />
                     </div>
                     )}
                     <div
-                    className={`rounded-lg p-3 max-w-[90%] text-sm break-words ${
+                    className={`rounded-lg p-2 md:p-3 max-w-[90%] text-sm break-words ${
                         message.from === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
@@ -192,7 +192,7 @@ export function ChatPanel({ document }) {
                         )}
                     </div>
                     {message.from === 'user' && (
-                    <div className="p-2 rounded-full bg-muted">
+                    <div className="p-2 rounded-full bg-muted shrink-0">
                         <User className="w-5 h-5" />
                     </div>
                     )}
@@ -206,17 +206,17 @@ export function ChatPanel({ document }) {
                     <p>No messages yet.</p>
                     <p className="text-xs">Ask a question or use a suggestion to start.</p>
                 </div>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-sm'>
+                <div className='grid grid-cols-1 gap-2 w-full max-w-xs'>
                     {suggestionPrompts.map((prompt, index) => (
                         <Button 
                             key={index} 
                             variant="outline" 
-                            className="justify-start text-left h-auto"
+                            className="justify-start text-left h-auto p-3"
                             onClick={() => handleSuggestionClick(prompt.text)}
                             disabled={isLoading}
                         >
                             <prompt.icon className="w-4 h-4 mr-2 shrink-0" />
-                            <span>{prompt.text}</span>
+                            <span className="text-sm">{prompt.text}</span>
                         </Button>
                     ))}
                 </div>
@@ -227,9 +227,10 @@ export function ChatPanel({ document }) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question about the document..."
+            placeholder="Ask a question..."
             autoComplete="off"
             disabled={isLoading || isHistoryLoading}
+            className="text-sm"
           />
           <Button type="submit" size="icon" disabled={isLoading || isHistoryLoading || !input.trim()}>
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

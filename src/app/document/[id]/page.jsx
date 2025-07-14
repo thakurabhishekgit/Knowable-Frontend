@@ -114,7 +114,7 @@ export default function SingleDocumentPage() {
                 direction="horizontal"
                 className="w-full h-full rounded-lg border"
               >
-                <ResizablePanel defaultSize={75} minSize={30}>
+                <ResizablePanel defaultSize={65} minSize={30}>
                   {documentViewerUrl ? (
                       <iframe
                           src={documentViewerUrl}
@@ -128,8 +128,10 @@ export default function SingleDocumentPage() {
                   )}
                 </ResizablePanel>
                 <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={25} minSize={20}>
-                    <ChatPanel document={document} />
+                <ResizablePanel defaultSize={35} minSize={25}>
+                    <div className="h-full">
+                        <ChatPanel document={document} />
+                    </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>
