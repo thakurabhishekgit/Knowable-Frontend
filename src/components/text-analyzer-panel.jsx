@@ -6,21 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookText, Lightbulb, Languages, Sparkles } from 'lucide-react';
+import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { analyzeText } from '@/ai/flows/text-analyzer-flow';
 import { useToast } from '@/hooks/use-toast';
 
 const analysisPrompts = [
     { text: "Summarize", icon: BookText },
     { text: "Explain Key Concepts", icon: Lightbulb },
-    { text: "Translate to English", icon: Languages },
 ];
+
+const translationLanguages = ["English", "Hindi", "Telugu"];
 
 export function TextAnalyzerPanel() {
     const { toast } = useToast();
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState('');
+    const [selectedLanguage, setSelectedLanguage] = useState(translationLanguages[0]);
 
     const handleAnalysis = async (task) => {
         if (!inputText.trim()) {
@@ -49,6 +57,10 @@ export function TextAnalyzerPanel() {
         }
     };
 
+    const handleTranslate = async () => {
+        await handleAnalysis(`Translate to ${selectedLanguage}`);
+    };
+
     return (
         <div className="h-full flex flex-col p-2 md:p-4 gap-4">
             <Textarea
@@ -58,7 +70,7 @@ export function TextAnalyzerPanel() {
                 className="flex-grow text-sm min-h-[150px]"
                 disabled={isLoading}
             />
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 {analysisPrompts.map((prompt) => (
                     <Button
                         key={prompt.text}
@@ -71,6 +83,32 @@ export function TextAnalyzerPanel() {
                         {prompt.text}
                     </Button>
                 ))}
+                <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" disabled={isLoading || !inputText.trim()}>
+                                {selectedLanguage}
+                                <ChevronDown className="w-4 h-4 ml-2" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {translationLanguages.map(lang => (
+                                <DropdownMenuItem key={lang} onSelect={() => setSelectedLanguage(lang)}>
+                                    {lang}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button
+                        variant="outline"
+                        onClick={handleTranslate}
+                        disabled={isLoading || !inputText.trim()}
+                        size="sm"
+                    >
+                        <Languages className="w-4 h-4 mr-2" />
+                        Translate
+                    </Button>
+                </div>
             </div>
             <div className="flex-1 min-h-0">
                 <Card className="h-full">

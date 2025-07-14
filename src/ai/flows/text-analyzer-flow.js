@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 const AnalyzeTextInputSchema = z.object({
     text: z.string().describe('The text snippet to analyze.'),
-    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to English").'),
+    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to Hindi").'),
 });
 
 const analyzeTextFlow = ai.defineFlow(
@@ -25,7 +25,7 @@ const analyzeTextFlow = ai.defineFlow(
       const llmResponse = await ai.generate({
         prompt: `You are an expert academic assistant. Your task is to perform the following action on the provided text snippet: "${input.task}".
 
-        Keep your response concise and directly related to the user's request.
+        Keep your response concise and directly related to the user's request. If you are translating, only provide the translated text.
 
         Text Snippet:
         ---
