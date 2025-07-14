@@ -63,7 +63,9 @@ function ItemActions({ item, userId, onWorkspaceDeleted }) {
         try {
             await api.delete(`/api/workspace/user/${userId}/workspace/${item.id}`);
             toast({ title: "Success", description: "Workspace deleted successfully." });
-            onWorkspaceDeleted();
+            if (onWorkspaceDeleted) {
+                onWorkspaceDeleted();
+            }
         } catch (error) {
             console.error("Failed to delete workspace:", error);
             // Toast is already handled by the API wrapper
@@ -85,7 +87,7 @@ function ItemActions({ item, userId, onWorkspaceDeleted }) {
                     <Edit className="mr-2 h-4 w-4" />
                     <span>Edit</span>
                 </DropdownMenuItem>
-                <VersionHistorySheet>
+                <VersionHistorySheet item={item}>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <Clock className="mr-2 h-4 w-4" />
                         <span>Version History</span>

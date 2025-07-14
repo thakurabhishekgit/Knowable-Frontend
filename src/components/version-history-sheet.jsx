@@ -1,3 +1,4 @@
+
 import {
   Sheet,
   SheetContent,
@@ -9,15 +10,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
 
-const versions = [
-    { id: 5, author: "Alex Doe", timestamp: "2 hours ago", summary: "Revised introduction and added new data points." },
-    { id: 4, author: "Alex Doe", timestamp: "1 day ago", summary: "Edited for clarity and style." },
-    { id: 3, author: "Jane Smith", timestamp: "3 days ago", summary: "Added section on future research." },
-    { id: 2, author: "Alex Doe", timestamp: "5 days ago", summary: "Initial draft." },
-    { id: 1, author: "System", timestamp: "5 days ago", summary: "Document created." },
-];
+const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+}
 
-export function VersionHistorySheet({ children }) {
+export function VersionHistorySheet({ children, item }) {
+  if (!item) return null;
+
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -30,20 +31,18 @@ export function VersionHistorySheet({ children }) {
         </SheetHeader>
         <ScrollArea className="h-[calc(100%-4rem)] pr-4 mt-4">
           <div className="space-y-6">
-            {versions.map((version) => (
-              <div key={version.id} className="flex gap-4">
+              <div className="flex gap-4">
                 <div className="flex flex-col items-center">
                   <div className="w-3 h-3 rounded-full bg-primary mt-1"></div>
                   <div className="flex-1 w-px bg-border"></div>
                 </div>
                 <div>
-                  <p className="font-semibold">Version {version.id}</p>
-                  <p className="text-sm text-muted-foreground">{version.author} - {version.timestamp}</p>
-                  <p className="text-sm mt-1">{version.summary}</p>
-                  <Button variant="outline" size="sm" className="mt-2">Restore</Button>
+                  <p className="font-semibold">Version 1</p>
+                  <p className="text-sm text-muted-foreground">System - {formatDate(item.createdAt)}</p>
+                  <p className="text-sm mt-1">Workspace created.</p>
+                  <Button variant="outline" size="sm" className="mt-2" disabled>Current</Button>
                 </div>
               </div>
-            ))}
           </div>
         </ScrollArea>
       </SheetContent>
