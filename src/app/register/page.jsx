@@ -24,10 +24,27 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const profilePictureFile = data.profilePicture;
 
     try {
-      // The entire form, including the file, will be sent as multipart/form-data
-      await api.post('/api/users/registerUser', formData);
+      // Step 1: Register the user with text data
+      const userPayload = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        universityName: data.universityName,
+      };
+
+      const registeredUser = await api.post('/api/users/registerUser', userPayload);
+
+      // Step 2: If there's a profile picture, upload it
+      if (profilePictureFile && profilePictureFile.size > 0 && registeredUser && registeredUser.id) {
+        const pictureFormData = new FormData();
+        pictureFormData.append('profilePicture', profilePictureFile);
+        
+        await api.post(`/api/users/uploadProfilePicture/${registeredUser.id}`, pictureFormData);
+      }
       
       toast({
         title: "Success",
