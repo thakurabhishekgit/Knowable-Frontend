@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -18,11 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { analyzePaper } from "@/ai/flows/paper-analysis-flow";
 
-export function PreviousPaperDialog({ children, document }) {
+export function PreviousPaperDialog({ children, document, onPaperUploaded }) {
   const { toast } = useToast();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [subjectName, setSubjectName] = useState('');
   const [file, setFile] = useState(null);
@@ -48,33 +45,14 @@ export function PreviousPaperDialog({ children, document }) {
     formData.append('file', file);
 
     try {
-        // Step 1: Upload the previous paper and get its text
-        toast({ title: "Step 1/2: Uploading Paper", description: "Please wait while we upload your document..." });
-        const uploadedPaper = await api.post(`/api/previous-papers/upload/${document.id}`, formData);
-
-        if (!uploadedPaper.textExtracted || !document.textExtracted) {
-            throw new Error("Text could not be extracted from one or both documents.");
-        }
-
-        // Step 2: Run AI analysis
-        toast({ title: "Step 2/2: Analyzing", description: "The AI is now analyzing the documents. This may take a moment." });
-        const analysisResult = await analyzePaper({
-            documentText: document.textExtracted,
-            paperText: uploadedPaper.textExtracted,
-        });
-
-        // Step 3: Store result and navigate
-        sessionStorage.setItem('paperAnalysisResult', JSON.stringify(analysisResult));
-        sessionStorage.setItem('documentTitle', document.title);
-        // Store workspaceId for breadcrumb link
-        if (document.workspace?.id) {
-            sessionStorage.setItem('workspaceIdForReport', document.workspace.id);
-        }
-
-
-        toast({ title: "Analysis Complete!", description: "Redirecting to your analysis report." });
-        router.push(`/analysis-report/${document.id}`);
+        await api.post(`/api/previous-papers/upload/${document.id}`, formData);
         
+        toast({ title: "Upload Complete!", description: "The paper has been added to your list." });
+        
+        if (onPaperUploaded) {
+            onPaperUploaded();
+        }
+
         // Reset form and close dialog
         setSubjectName('');
         setFile(null);
@@ -83,8 +61,8 @@ export function PreviousPaperDialog({ children, document }) {
         }
         setOpen(false);
     } catch (error) {
-        console.error("Failed to process previous paper:", error);
-        toast({ variant: "destructive", title: "Analysis Failed", description: error.message || "An unknown error occurred."});
+        console.error("Failed to upload previous paper:", error);
+        toast({ variant: "destructive", title: "Upload Failed", description: error.message || "An unknown error occurred."});
     } finally {
         setIsSubmitting(false);
     }
@@ -96,9 +74,9 @@ export function PreviousPaperDialog({ children, document }) {
       <DialogContent className="sm:max-w-[480px]">
         <form onSubmit={handleSubmit}>
             <DialogHeader>
-            <DialogTitle>Analyze Previous Year's Paper</DialogTitle>
+            <DialogTitle>Upload Previous Year's Paper</DialogTitle>
             <DialogDescription>
-                Upload a past question paper (.pdf, .docx). The AI will compare it with your current document.
+                Upload a past question paper (.pdf, .docx). It will be added to the list for analysis.
             </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -134,7 +112,7 @@ export function PreviousPaperDialog({ children, document }) {
                     <Button type="button" variant="outline">Cancel</Button>
                 </DialogClose>
                 <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Processing..." : "Upload & Analyze"}
+                    {isSubmitting ? "Uploading..." : "Upload Paper"}
                 </Button>
             </DialogFooter>
         </form>

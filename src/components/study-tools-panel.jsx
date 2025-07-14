@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Layers, FileQuestion, GraduationCap, FileClock } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { PreviousPaperDialog } from '@/components/previous-paper-dialog';
+import Link from 'next/link';
 
 export function StudyToolsPanel({ document }) {
     const router = useRouter();
@@ -86,18 +86,18 @@ export function StudyToolsPanel({ document }) {
                     <CardHeader>
                         <div className="flex items-center gap-3">
                            <FileClock className="w-6 h-6 text-primary" />
-                            <CardTitle className="text-base">Analyze Previous Paper</CardTitle>
+                            <CardTitle className="text-base">Analyze Previous Papers</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent>
                         <CardDescription>
-                           Upload a past paper to find important topics and expected questions.
+                           Upload and analyze past papers to find important topics and expected questions.
                         </CardDescription>
-                        <PreviousPaperDialog document={document}>
-                             <Button className="mt-4 w-full">
-                                Upload & Analyze Paper
-                            </Button>
-                        </PreviousPaperDialog>
+                        <Button asChild className="mt-4 w-full">
+                            <Link href={`/previous-papers/${document.id}`}>
+                                Manage & Analyze Papers
+                            </Link>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
