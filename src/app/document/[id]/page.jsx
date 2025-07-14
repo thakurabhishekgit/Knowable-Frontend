@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -103,19 +104,20 @@ export default function SingleDocumentPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Extracted Text</CardTitle>
-          <CardDescription>
-            This is the text content extracted from the uploaded file.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[60vh] w-full rounded-md border p-4">
-            <pre className="whitespace-pre-wrap text-sm">{document.textExtracted}</pre>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <div className="mt-8">
+        {/* The extracted text is no longer displayed, but is available in the 'document' state variable. */}
+        <Card>
+            <CardHeader>
+                <CardTitle>Document Details</CardTitle>
+                <CardDescription>
+                    Additional document information and actions will be displayed here.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground">The content of this document has been processed.</p>
+            </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
