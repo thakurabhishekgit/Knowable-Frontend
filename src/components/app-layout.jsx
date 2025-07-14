@@ -2,13 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { BrainCircuit, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BrainCircuit, Menu, LogOut } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -31,12 +32,21 @@ function Footer() {
 
 export function AppLayout({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Do not render layout for login/register pages
   if (pathname === "/" || pathname === "/register") {
     return <>{children}</>;
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event('storage'));
+    router.push("/");
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -51,7 +61,7 @@ export function AppLayout({ children }) {
                         <span className="sr-only">Open Menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left">
+                <SheetContent side="left" className="flex flex-col">
                     <nav className="grid gap-6 text-lg font-medium mt-6">
                         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
                             <BrainCircuit className="w-6 h-6 text-primary" />
@@ -71,6 +81,13 @@ export function AppLayout({ children }) {
                         </Link>
                         ))}
                     </nav>
+                    <div className="mt-auto">
+                        <Separator />
+                        <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-2 text-lg font-medium mt-4">
+                            <LogOut className="h-5 w-5" />
+                            <span>Logout</span>
+                        </Button>
+                    </div>
                 </SheetContent>
             </Sheet>
         </div>
