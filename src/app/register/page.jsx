@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="space-y-2 text-center">
         <div className="inline-block">
