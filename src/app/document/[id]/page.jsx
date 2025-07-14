@@ -11,11 +11,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { FileText } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatPanel } from "@/components/chat-panel";
@@ -77,7 +72,7 @@ export default function SingleDocumentPage() {
 
   return (
     <div className="flex flex-col h-full">
-        <header className="container mx-auto px-4 md:px-6 py-4 border-b shrink-0">
+        <header className="container mx-auto px-4 md:px-6 py-4 border-b">
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>
@@ -108,30 +103,25 @@ export default function SingleDocumentPage() {
             </p>
         </header>
 
-        <main className="flex-1 p-4 min-h-0 h-[100vh]">
-            <ResizablePanelGroup direction="horizontal" className="h-full w-full rounded-lg border">
-                <ResizablePanel defaultSize={70}>
-                    <div className="flex h-full items-center justify-center p-0">
-                        {documentViewerUrl ? (
-                            <iframe
-                                src={documentViewerUrl}
-                                className="w-full h-full"
-                                title={document.title}
-                            ></iframe>
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-muted">
-                                <p className="text-muted-foreground">Document preview is not available.</p>
-                            </div>
-                        )}
-                    </div>
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={30}>
-                    <div className="h-full overflow-hidden">
-                        <ChatPanel document={document} />
-                    </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+        <main className="container mx-auto p-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    {documentViewerUrl ? (
+                        <iframe
+                            src={documentViewerUrl}
+                            className="w-full h-[100vh] border rounded-lg"
+                            title={document.title}
+                        ></iframe>
+                    ) : (
+                        <div className="w-full h-[100vh] flex items-center justify-center bg-muted border rounded-lg">
+                            <p className="text-muted-foreground">Document preview is not available.</p>
+                        </div>
+                    )}
+                </div>
+                <div className="h-[100vh]">
+                     <ChatPanel document={document} />
+                </div>
+            </div>
         </main>
     </div>
   );
