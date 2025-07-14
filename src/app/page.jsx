@@ -27,8 +27,22 @@ export default function LoginPage() {
     const email = form.email.value;
     const password = form.password.value;
 
+    const loginPayload = {
+      id: null,
+      username: "",
+      password: password,
+      email: email,
+      profilePicture: null,
+      profilePictureUrl: null,
+      universityName: null,
+      createdAt: null,
+      updatedAt: null,
+      workspaces: [],
+      token: null,
+    };
+
     try {
-      const data = await api.post('/api/users/login', { email, password });
+      const data = await api.post('/api/users/login', loginPayload);
       
       if (data && data.token) {
         localStorage.setItem('token', data.token);
