@@ -1,5 +1,8 @@
 
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +14,41 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await api.post('/api/users/login', { email: data.email, password: data.password });
+      if (response && response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response));
+        toast({
+            title: "Login Successful",
+            description: "Welcome back!",
+        });
+        router.push("/home");
+      } else {
+        throw new Error("Login failed: No token received");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+      });
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="mx-auto max-w-sm w-full">
@@ -26,11 +62,12 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="m@example.com"
                 required
@@ -46,15 +83,12 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full" asChild>
-              <Link href="/home">Login</Link>
+            <Button type="submit" className="w-full">
+              Login
             </Button>
-            <Button variant="outline" className="w-full">
-              Login with Google
-            </Button>
-          </div>
+          </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="underline">
