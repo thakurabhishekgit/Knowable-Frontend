@@ -37,6 +37,20 @@ export function StudyToolsPanel({ document }) {
         }
     };
 
+    const handleAnalyzePaperClick = () => {
+        // Set the workspaceId in session storage so the previous-papers page can use it.
+        if (document?.workspace?.id) {
+            sessionStorage.setItem('workspaceIdForReport', document.workspace.id);
+            router.push(`/previous-papers/${document.id}`);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Navigation Error",
+                description: "Cannot navigate. The workspace context for this document is missing.",
+            });
+        }
+    };
+
     return (
         <div className="h-full flex flex-col p-4 md:p-6 gap-6 overflow-y-auto">
             <div className="text-center">
@@ -93,10 +107,8 @@ export function StudyToolsPanel({ document }) {
                         <CardDescription>
                            Upload and analyze past papers to find important topics and expected questions.
                         </CardDescription>
-                        <Button asChild className="mt-4 w-full">
-                            <Link href={`/previous-papers/${document.id}`}>
-                                Manage & Analyze Papers
-                            </Link>
+                        <Button onClick={handleAnalyzePaperClick} className="mt-4 w-full">
+                            Manage & Analyze Papers
                         </Button>
                     </CardContent>
                 </Card>

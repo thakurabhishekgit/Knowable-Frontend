@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
     Accordion,
     AccordionContent,
@@ -23,10 +23,19 @@ import { FileClock, Lightbulb, HelpCircle, BookCheck } from "lucide-react";
 
 export default function AnalysisReportPage() {
     const params = useParams();
+    const searchParams = useSearchParams();
     const [analysis, setAnalysis] = useState(null);
     const [documentTitle, setDocumentTitle] = useState('Document');
     const [error, setError] = useState(null);
     const [noOverlap, setNoOverlap] = useState(false);
+    
+    // Read workspaceId from URL and store it for consistent navigation
+    useEffect(() => {
+        const workspaceId = searchParams.get('workspaceId');
+        if (workspaceId) {
+            sessionStorage.setItem('workspaceIdForReport', workspaceId);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         try {
