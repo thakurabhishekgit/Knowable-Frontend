@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BrainCircuit, BookOpen, Layers, FileQuestion, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
+import { useEffect, useState } from "react";
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
     <div className="bg-card p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center">
@@ -17,6 +18,13 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 );
 
 export default function LandingPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,12 +34,20 @@ export default function LandingPage() {
             <span>Knowable.AI</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">Get Started</Link>
-            </Button>
+            {isLoggedIn ? (
+                <Button asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                </Button>
+            ) : (
+                <>
+                    <Button asChild variant="ghost">
+                    <Link href="/login">Login</Link>
+                    </Button>
+                    <Button asChild>
+                    <Link href="/register">Get Started</Link>
+                    </Button>
+                </>
+            )}
           </div>
         </div>
       </header>

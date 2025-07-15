@@ -7,13 +7,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to the login page if not authenticated, otherwise to dashboard.
-    const token = localStorage.getItem("token");
-    if (token) {
-        router.replace("/dashboard");
-    } else {
-        router.replace("/login");
-    }
+    // Always redirect this legacy route to the main landing page.
+    router.replace("/");
   }, [router]);
   
   return (

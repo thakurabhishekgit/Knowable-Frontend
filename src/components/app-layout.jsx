@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BrainCircuit, Menu, LogOut } from "lucide-react";
+import { BrainCircuit, Menu, LogOut, Home } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
+  { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/workspace", label: "Workspaces" },
 ];
@@ -93,9 +94,10 @@ export function AppLayout({ children }) {
                         href={item.href}
                         className={cn(
                             "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                            pathname.startsWith(item.href) ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+                            pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
+                        {item.icon && <item.icon className="h-5 w-5" />}
                         {item.label}
                     </Link>
                     ))}
@@ -123,7 +125,7 @@ export function AppLayout({ children }) {
                 href={item.href}
                 className={cn(
                     "transition-colors hover:text-foreground",
-                    pathname.startsWith(item.href) ? "text-foreground" : "text-muted-foreground"
+                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
                 )}
                 >
                 {item.label}
