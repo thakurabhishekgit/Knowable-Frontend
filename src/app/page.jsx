@@ -63,7 +63,9 @@ export default function LandingPage() {
               Knowable.AI transforms your study materials—lecture notes, textbooks, and PDFs—into interactive learning experiences. Prepare for exams, clarify complex topics, and study smarter, not harder.
             </p>
             <Button asChild size="lg">
-              <Link href="/register">Sign Up for Free</Link>
+              <Link href={isLoggedIn ? "/dashboard" : "/register"}>
+                {isLoggedIn ? "Go to Dashboard" : "Sign Up for Free"}
+              </Link>
             </Button>
           </div>
         </section>
