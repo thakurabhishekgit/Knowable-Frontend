@@ -78,7 +78,7 @@ function ItemActions({ item, userId, onWorkspaceDeleted }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="shrink-0">
                     <MoreVertical className="h-4 w-4" />
                     <span className="sr-only">More actions</span>
                 </Button>
@@ -241,11 +241,11 @@ export default function WorkspacePage() {
                 {workspaces.map((workspace) => (
                     <Card key={workspace.id}>
                         <CardHeader>
-                            <div className="flex items-start justify-between">
-                                <Link href={`/workspace/${workspace.id}`} className="hover:underline">
+                            <div className="flex items-start justify-between gap-4">
+                                <Link href={`/workspace/${workspace.id}`} className="hover:underline flex-1 min-w-0">
                                     <div className="flex items-center gap-3">
-                                        <Folder className="h-5 w-5 text-muted-foreground" />
-                                        <CardTitle className="text-base font-semibold">{workspace.name}</CardTitle>
+                                        <Folder className="h-5 w-5 text-muted-foreground shrink-0" />
+                                        <CardTitle className="text-base font-semibold truncate">{workspace.name}</CardTitle>
                                     </div>
                                 </Link>
                                 <ItemActions item={workspace} userId={user?.id} onWorkspaceDeleted={handleWorkspaceAction} />
