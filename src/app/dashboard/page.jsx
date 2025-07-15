@@ -66,13 +66,13 @@ export default function DashboardPage() {
     }, [])
 
     if (loading) {
-        return <div className="p-10">Loading...</div>
+        return <div>Loading...</div>
     }
 
     return (
-      <div className="p-4 md:p-10">
+      <div className="space-y-8">
         {user && (
-            <Card className="mb-8">
+            <Card>
                 <CardHeader>
                     <div className="flex items-center gap-4">
                         <Avatar className="h-16 w-16">
@@ -94,7 +94,7 @@ export default function DashboardPage() {
             </Card>
         )}
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between">
             <div>
                 <h2 className="text-2xl font-bold tracking-tight">Welcome, {user?.username}!</h2>
                 <p className="text-muted-foreground">
