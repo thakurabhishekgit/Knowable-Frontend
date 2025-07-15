@@ -85,11 +85,11 @@ export default function LandingPage() {
                 <div className="lg:w-1/2">
                     <Image 
                         src="https://placehold.co/600x400.png"
-                        alt="Screenshot of Knowable.AI dashboard"
+                        alt="A student interacting with an AI interface on a laptop"
                         width={600}
                         height={400}
                         className="rounded-lg shadow-xl"
-                        data-ai-hint="dashboard screen"
+                        data-ai-hint="student AI"
                     />
                 </div>
                 <div className="lg:w-1/2">

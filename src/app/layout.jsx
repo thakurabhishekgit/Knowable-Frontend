@@ -12,6 +12,9 @@ const fontInter = Inter({
 export const metadata = {
   title: "Knowable.AI",
   description: "A minimal SaaS platform for knowledge management.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
