@@ -4,15 +4,14 @@
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layers, FileQuestion, GraduationCap, FileClock } from 'lucide-react';
+import { Layers, FileQuestion, GraduationCap, FileClock, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import Link from 'next/link';
 
 export function StudyToolsPanel({ document }) {
     const router = useRouter();
     const { toast } = useToast();
 
-    const handleGenerate = (toolType) => {
+    const handleGenerateStudyTool = (toolType) => {
         if (!document?.textExtracted) {
             toast({
                 variant: "destructive",
@@ -22,8 +21,6 @@ export function StudyToolsPanel({ document }) {
             return;
         }
 
-        // Store the text in sessionStorage to pass it to the new page
-        // It's a simple way to pass large data without using the URL
         try {
             sessionStorage.setItem('documentTextForTool', document.textExtracted);
             router.push(`/results?type=${toolType}`);
@@ -36,9 +33,34 @@ export function StudyToolsPanel({ document }) {
             });
         }
     };
+    
+    const handleGenerateReport = (reportType) => {
+        if (!document?.textExtracted) {
+            toast({
+                variant: "destructive",
+                title: "Cannot Generate Report",
+                description: "The text for this document has not been processed yet. Please wait a moment and try again."
+            });
+            return;
+        }
+
+        try {
+            sessionStorage.setItem('documentTextForTool', document.textExtracted);
+            sessionStorage.setItem('documentTitle', document.title);
+            sessionStorage.setItem('workspaceIdForReport', document.workspace.id);
+            router.push(`/${reportType}/${document.id}?workspaceId=${document.workspace.id}`);
+        } catch (error) {
+             console.error("Failed to use sessionStorage or navigate:", error);
+             toast({
+                variant: "destructive",
+                title: "Navigation Error",
+                description: "Could not navigate to the report page."
+            });
+        }
+    };
+
 
     const handleAnalyzePaperClick = () => {
-        // Set the workspaceId in session storage so the previous-papers page can use it.
         if (document?.workspace?.id) {
             sessionStorage.setItem('workspaceIdForReport', document.workspace.id);
             router.push(`/previous-papers/${document.id}`);
@@ -73,7 +95,7 @@ export function StudyToolsPanel({ document }) {
                         <CardDescription>
                             Automatically create flashcards for key terms and concepts in the document.
                         </CardDescription>
-                        <Button className="mt-4 w-full" onClick={() => handleGenerate('flashcards')}>
+                        <Button className="mt-4 w-full" onClick={() => handleGenerateStudyTool('flashcards')}>
                             Create Flashcards
                         </Button>
                     </CardContent>
@@ -90,8 +112,25 @@ export function StudyToolsPanel({ document }) {
                         <CardDescription>
                             Create a multiple-choice quiz to test your understanding of the material.
                         </CardDescription>
-                        <Button className="mt-4 w-full" onClick={() => handleGenerate('quiz')}>
+                        <Button className="mt-4 w-full" onClick={() => handleGenerateStudyTool('quiz')}>
                             Create a Quiz
+                        </Button>
+                    </CardContent>
+                </Card>
+                
+                 <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-3">
+                           <Search className="w-6 h-6 text-primary" />
+                            <CardTitle className="text-base">Find Key Topics & Questions</CardTitle>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <CardDescription>
+                           Let AI find the main topics, key terms, and potential questions from your document.
+                        </CardDescription>
+                        <Button onClick={() => handleGenerateReport('topics-report')} className="mt-4 w-full">
+                            Generate Study Guide
                         </Button>
                     </CardContent>
                 </Card>

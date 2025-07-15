@@ -4,3 +4,4 @@ import './flows/text-analyzer-flow.js';
 import './flows/study-tools-flow.js';
 import './flows/paper-analysis-flow.js';
 import './flows/question-answer-flow.js';
+import './flows/topic-generator-flow.js';
