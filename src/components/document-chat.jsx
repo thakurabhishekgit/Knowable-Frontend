@@ -10,6 +10,7 @@ import { Send, User, Bot, Loader2, MessageSquare, BookText, Lightbulb } from 'lu
 import { answerQuestion, generateSummary } from '@/ai/flows/chat-flow';
 import { api } from '@/lib/api';
 import { useToast } from "@/hooks/use-toast";
+import { MarkdownRenderer } from './markdown-renderer';
 
 const suggestionPrompts = [
     {
@@ -201,7 +202,9 @@ export function DocumentChat({ document }) {
                             <p>{message.text}</p>
                         </div>
                     ) : (
-                        <p className="text-sm md:text-base whitespace-pre-wrap">{message.text}</p>
+                        message.from === 'bot' 
+                            ? <MarkdownRenderer content={message.text} />
+                            : <p className="text-sm md:text-base whitespace-pre-wrap">{message.text}</p>
                     )}
                 </div>
                 {message.from === 'user' && (

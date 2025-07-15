@@ -19,14 +19,12 @@ import {
 import { FileText } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatPanel } from "@/components/chat-panel";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SingleDocumentPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const documentId = params.id;
   const workspaceId = searchParams.get('workspaceId');
-  const isMobile = useIsMobile();
   
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -111,12 +109,12 @@ export default function SingleDocumentPage() {
         </header>
 
         <main className="container mx-auto p-4 md:p-6 flex-1">
-            <div className="h-[calc(100vh-220px)]">
+            <div className="h-[100vh]">
               <ResizablePanelGroup
-                direction={isMobile ? "vertical" : "horizontal"}
+                direction="horizontal"
                 className="w-full h-full rounded-lg border"
               >
-                <ResizablePanel defaultSize={isMobile ? 50 : 65} minSize={30}>
+                <ResizablePanel defaultSize={65} minSize={30}>
                   {documentViewerUrl ? (
                       <iframe
                           src={documentViewerUrl}
@@ -130,7 +128,7 @@ export default function SingleDocumentPage() {
                   )}
                 </ResizablePanel>
                 <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={isMobile ? 50 : 35} minSize={30}>
+                <ResizablePanel defaultSize={35} minSize={30}>
                     <div className="h-full">
                         <ChatPanel document={document} />
                     </div>
