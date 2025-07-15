@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send, User, Bot, Loader2, MessageSquare, BookText, Lightbulb } from 'lucide-react';
 import { answerQuestion, generateSummary } from '@/ai/flows/chat-flow';
 import { api } from '@/lib/api';
@@ -23,13 +24,31 @@ const suggestionPrompts = [
     }
 ];
 
+const getInitials = (name = "") => {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+};
+
 export function DocumentChat({ document }) {
   const { toast } = useToast();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const scrollAreaRef = useRef(null);
+
+  // Effect to get user data for avatar
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   // Effect to scroll to the bottom when new messages are added
   useEffect(() => {
@@ -186,9 +205,10 @@ export function DocumentChat({ document }) {
                     )}
                 </div>
                 {message.from === 'user' && (
-                <div className="p-2 rounded-full bg-muted shrink-0">
-                    <User className="w-5 h-5" />
-                </div>
+                    <Avatar className="w-9 h-9 shrink-0">
+                        <AvatarImage src={user?.profilePictureUrl} alt={user?.username} />
+                        <AvatarFallback>{user ? getInitials(user.username) : 'U'}</AvatarFallback>
+                    </Avatar>
                 )}
             </div>
             ))}
