@@ -73,15 +73,15 @@ export default function DashboardLayout({ children }) {
   ];
 
   if (isCheckingAuth) {
-    return <div className="container mx-auto p-10">Checking authentication...</div>;
+    return <div className="p-10">Checking authentication...</div>;
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4 md:px-6">
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
         <aside className="lg:w-1/5 lg:shrink-0">
           <nav className="flex flex-col space-y-2">
-             <div className="px-4 py-2">
+             <div className="px-0 md:px-4 py-2">
                 <h3 className="mb-2 px-2 text-lg font-semibold tracking-tight">Workspaces</h3>
                 <div className="flex flex-col gap-1">
                     {workspaces && workspaces.length > 0 ? (
@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }) {
                 </div>
             </div>
             <Separator />
-            <div className="px-4 py-2">
+            <div className="px-0 md:px-4 py-2">
                  <h3 className="mb-2 px-2 text-lg font-semibold tracking-tight">Settings</h3>
                 {sidebarNavItems.map((item) => (
                     <Link
