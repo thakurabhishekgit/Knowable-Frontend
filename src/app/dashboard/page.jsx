@@ -106,16 +106,16 @@ export default function DashboardPage() {
         {workspaces && workspaces.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {workspaces.map((workspace) => (
-                    <Link href={`/workspace/${workspace.id}`} key={workspace.id}>
-                        <Card className="hover:bg-muted/50 transition-colors">
+                    <Link href={`/workspace/${workspace.id}`} key={workspace.id} className="block">
+                        <Card className="hover:bg-muted/50 transition-colors h-full flex flex-col">
                             <CardHeader>
                                 <div className="flex items-center gap-3">
-                                    <Folder className="h-6 w-6 text-primary" />
-                                    <CardTitle>{workspace.name}</CardTitle>
+                                    <Folder className="h-6 w-6 text-primary shrink-0" />
+                                    <CardTitle className="truncate">{workspace.name}</CardTitle>
                                 </div>
                             </CardHeader>
-                            <CardContent>
-                                <CardDescription>{workspace.description}</CardDescription>
+                            <CardContent className="flex-grow">
+                                <CardDescription className="line-clamp-2">{workspace.description}</CardDescription>
                             </CardContent>
                         </Card>
                     </Link>

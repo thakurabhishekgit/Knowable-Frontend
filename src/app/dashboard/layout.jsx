@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <aside className="lg:w-1/5">
+        <aside className="lg:w-1/5 lg:shrink-0">
           <nav className="flex flex-col space-y-2">
              <div className="px-4 py-2">
                 <h3 className="mb-2 px-2 text-lg font-semibold tracking-tight">Workspaces</h3>
@@ -76,11 +76,11 @@ export default function DashboardLayout({ children }) {
                                 href={`/workspace/${workspace.id}`}
                                 className={cn(
                                     buttonVariants({ variant: "ghost" }),
-                                    "justify-start gap-2"
+                                    "justify-start gap-2 truncate"
                                 )}
                             >
-                                <Folder className="h-4 w-4" />
-                                {workspace.name}
+                                <Folder className="h-4 w-4 shrink-0" />
+                                <span className="truncate">{workspace.name}</span>
                             </Link>
                         ))
                     ) : (
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </nav>
         </aside>
-        <div className="flex-1 px-4 md:px-0">{children}</div>
+        <div className="flex-1 w-full min-w-0 px-4 md:px-0">{children}</div>
       </div>
     </div>
   )
