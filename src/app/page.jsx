@@ -2,106 +2,138 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, BookOpen, Layers, FileQuestion, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { api } from "@/lib/api";
+import Image from 'next/image';
 
-export default function LoginPage() {
-  const router = useRouter();
-  const { toast } = useToast();
+const FeatureCard = ({ icon: Icon, title, description }) => (
+    <div className="bg-card p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center">
+        <div className="bg-primary/10 p-3 rounded-full mb-4 border border-primary/20">
+            <Icon className="w-8 h-8 text-primary" />
+        </div>
+        <h3 className="text-xl font-semibold mb-2">{title}</h3>
+        <p className="text-muted-foreground">{description}</p>
+    </div>
+);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
-
-    const loginPayload = {
-      email: email,
-      password: password,
-    };
-
-    try {
-      const data = await api.post('/api/users/login', loginPayload);
-      
-      if (data && data.user && data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        toast({
-            title: "Login Successful",
-            description: "Welcome back!",
-        });
-        router.push("/dashboard");
-      } else {
-        throw new Error("Login failed: Invalid response from server");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      // The toast is already shown by the api handler if it's an API error.
-      // A generic error can be shown here for other cases.
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="mx-auto max-w-sm w-full">
-        <CardHeader className="space-y-2 text-center">
-          <div className="inline-block">
-            <BrainCircuit className="w-12 h-12 text-primary mx-auto" />
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+            <BrainCircuit className="w-7 h-7 text-primary" />
+            <span>Knowable.AI</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost">
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/register">Get Started</Link>
+            </Button>
           </div>
-          <CardTitle className="text-2xl">Welcome to Knowable.AI</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="m@example.com"
-                required
+        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 md:px-6 py-20 md:py-32 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
+              Unlock Your Academic Potential with AI
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8">
+              Knowable.AI transforms your study materials—lecture notes, textbooks, and PDFs—into interactive learning experiences. Prepare for exams, clarify complex topics, and study smarter, not harder.
+            </p>
+            <Button asChild size="lg">
+              <Link href="/register">Sign Up for Free</Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold">Your Ultimate Study Partner</h2>
+              <p className="text-muted-foreground mt-4">
+                From automated study tools to in-depth analysis, we have everything you need to succeed.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <FeatureCard 
+                icon={Layers}
+                title="Generate Study Tools"
+                description="Instantly create flashcards and multiple-choice quizzes from any document to test your knowledge and reinforce key concepts."
+              />
+              <FeatureCard 
+                icon={FileQuestion}
+                title="Analyze Past Papers"
+                description="Upload previous exam papers and let our AI identify the most frequently tested topics, helping you focus your revision."
+              />
+               <FeatureCard 
+                icon={BookOpen}
+                title="AI-Powered Study Guides"
+                description="Automatically extract main topics, a glossary of key terms, and potential exam questions from your study materials."
+              />
+              <FeatureCard 
+                icon={MessageSquare}
+                title="Document Chat"
+                description="Have a conversation with your documents. Ask questions, get summaries, and clarify confusing points in real-time."
               />
             </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" name="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
-              Sign up
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+        </section>
+
+        {/* How it works Section */}
+        <section className="py-20">
+            <div className="container mx-auto px-4 md:px-6 flex flex-col lg:flex-row items-center gap-12">
+                <div className="lg:w-1/2">
+                    <Image 
+                        src="https://placehold.co/600x400.png"
+                        alt="Screenshot of Knowable.AI dashboard"
+                        width={600}
+                        height={400}
+                        className="rounded-lg shadow-xl"
+                        data-ai-hint="dashboard screen"
+                    />
+                </div>
+                <div className="lg:w-1/2">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-6">Simple Steps to Smarter Studying</h2>
+                    <ul className="space-y-6">
+                        <li className="flex items-start gap-4">
+                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">1</div>
+                            <div>
+                                <h3 className="font-semibold text-lg">Upload Your Documents</h3>
+                                <p className="text-muted-foreground">Add your PDFs, lecture notes, or textbook chapters. We'll process the text and make it ready for analysis.</p>
+                            </div>
+                        </li>
+                         <li className="flex items-start gap-4">
+                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">2</div>
+                            <div>
+                                <h3 className="font-semibold text-lg">Choose Your Tool</h3>
+                                <p className="text-muted-foreground">Select from a suite of AI tools—generate a quiz, create flashcards, analyze a past paper, or simply chat with your document.</p>
+                            </div>
+                        </li>
+                         <li className="flex items-start gap-4">
+                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">3</div>
+                            <div>
+                                <h3 className="font-semibold text-lg">Master Your Subjects</h3>
+                                <p className="text-muted-foreground">Use the AI-generated insights and materials to study efficiently, understand topics deeply, and walk into your exams with confidence.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+      </main>
+
+      <footer className="border-t bg-background">
+        <div className="container mx-auto px-4 md:px-6 py-6 text-center text-muted-foreground">
+          <p>&copy; 2024 Knowable.AI. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }

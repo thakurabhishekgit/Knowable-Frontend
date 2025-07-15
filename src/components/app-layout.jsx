@@ -34,13 +34,25 @@ export function AppLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    };
+    checkLoginStatus();
+    window.addEventListener('storage', checkLoginStatus);
+    return () => window.removeEventListener('storage', checkLoginStatus);
+  }, []);
 
   useEffect(() => {
     // Close mobile menu on route change
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  if (pathname === "/" || pathname === "/register") {
+  const publicPages = ['/', '/login', '/register'];
+  if (publicPages.includes(pathname)) {
     return <>{children}</>;
   }
 
