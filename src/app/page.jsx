@@ -96,21 +96,27 @@ export default function LandingPage() {
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">Simple Steps to Smarter Studying</h2>
                     <ul className="space-y-6">
                         <li className="flex items-start gap-4">
-                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">1</div>
+                             <div className="bg-primary/10 p-3 rounded-full border border-primary/20 mt-1 shrink-0">
+                                <span className="text-primary font-bold">1</span>
+                            </div>
                             <div>
                                 <h3 className="font-semibold text-lg">Upload Your Documents</h3>
                                 <p className="text-muted-foreground">Add your PDFs, lecture notes, or textbook chapters. We'll process the text and make it ready for analysis.</p>
                             </div>
                         </li>
                          <li className="flex items-start gap-4">
-                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">2</div>
+                            <div className="bg-primary/10 p-3 rounded-full border border-primary/20 mt-1 shrink-0">
+                                <span className="text-primary font-bold">2</span>
+                            </div>
                             <div>
                                 <h3 className="font-semibold text-lg">Choose Your Tool</h3>
                                 <p className="text-muted-foreground">Select from a suite of AI tools—generate a quiz, create flashcards, analyze a past paper, or simply chat with your document.</p>
                             </div>
                         </li>
                          <li className="flex items-start gap-4">
-                            <div className="bg-primary text-primary-foreground h-8 w-8 rounded-full flex items-center justify-center font-bold text-lg shrink-0 mt-1">3</div>
+                           <div className="bg-primary/10 p-3 rounded-full border border-primary/20 mt-1 shrink-0">
+                                <span className="text-primary font-bold">3</span>
+                            </div>
                             <div>
                                 <h3 className="font-semibold text-lg">Master Your Subjects</h3>
                                 <p className="text-muted-foreground">Use the AI-generated insights and materials to study efficiently, understand topics deeply, and walk into your exams with confidence.</p>
