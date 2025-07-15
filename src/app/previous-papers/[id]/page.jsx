@@ -57,7 +57,7 @@ function AnalysisResultDisplay({ analysisResult }) {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className="px-4 pb-4">
-                               <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.answer}</p>
+                               <p className="text-sm text-foreground whitespace-pre-wrap">{item.answer}</p>
                             </AccordionContent>
                         </AccordionItem>
                     ))}
@@ -84,8 +84,13 @@ export default function PreviousPapersPage() {
         if (documentId) {
             setIsLoading(true);
             try {
-                // Corrected API endpoint for fetching a single document
-                const docPromise = api.get(`/api/documents/document/${documentId}`);
+                // The workspaceId is needed for fetching the document context correctly.
+                const workspaceId = sessionStorage.getItem('workspaceIdForReport');
+                if (!workspaceId) {
+                    throw new Error("Workspace context is missing. Please navigate from the workspace page.");
+                }
+
+                const docPromise = api.get(`/api/documents/workspace/${workspaceId}/document/${documentId}`);
                 const papersPromise = api.get(`/api/previous-papers/document/${documentId}`);
                 
                 const [docData, papersData] = await Promise.all([docPromise, papersPromise]);
@@ -95,7 +100,7 @@ export default function PreviousPapersPage() {
 
             } catch (error) {
                 console.error("Failed to fetch data:", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not load document or papers." });
+                toast({ variant: "destructive", title: "Error", description: error.message || "Could not load document or papers." });
             } finally {
                 setIsLoading(false);
             }
