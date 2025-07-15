@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -126,12 +127,32 @@ function ItemActions({ item, userId, onWorkspaceDeleted }) {
 }
 
 export default function WorkspacePage() {
+  const router = useRouter();
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        if (parsedUser.id) {
+          fetchWorkspaces(parsedUser.id);
+        }
+      }
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
 
   const fetchWorkspaces = async (userId) => {
     try {
+        setLoading(true);
         const fetchedWorkspaces = await api.get(`/api/workspace/user/${userId}`);
         setWorkspaces(fetchedWorkspaces);
     } catch (error) {
@@ -140,19 +161,6 @@ export default function WorkspacePage() {
         setLoading(false);
     }
   }
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-      if (parsedUser.id) {
-        fetchWorkspaces(parsedUser.id);
-      }
-    } else {
-        setLoading(false);
-    }
-  }, []);
 
   const handleWorkspaceAction = () => {
     if (user?.id) {
@@ -166,8 +174,8 @@ export default function WorkspacePage() {
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
   }
 
-  if (loading) {
-    return <div className="p-10">Loading workspaces...</div>
+  if (isCheckingAuth || loading) {
+    return <div className="p-10 container mx-auto">Loading workspaces...</div>
   }
 
   return (

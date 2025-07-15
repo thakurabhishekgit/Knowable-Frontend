@@ -27,10 +27,22 @@ import { api } from "@/lib/api";
 
 export default function SingleWorkspacePage() {
   const params = useParams();
+  const router = useRouter();
   const { id } = params;
   const [workspace, setWorkspace] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
+
 
   const fetchWorkspaceAndDocuments = async () => {
     if (id) {
@@ -53,8 +65,10 @@ export default function SingleWorkspacePage() {
   };
 
   useEffect(() => {
-    fetchWorkspaceAndDocuments();
-  }, [id]);
+    if (!isCheckingAuth) {
+      fetchWorkspaceAndDocuments();
+    }
+  }, [id, isCheckingAuth]);
 
   const handleItemCreated = () => {
     fetchWorkspaceAndDocuments(); // Re-fetch everything to get the new document
@@ -72,7 +86,7 @@ export default function SingleWorkspacePage() {
     });
   };
 
-  if (loading) {
+  if (isCheckingAuth || loading) {
     return <div className="container mx-auto p-8">Loading workspace...</div>;
   }
 

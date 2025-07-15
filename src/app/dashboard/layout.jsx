@@ -15,6 +15,17 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
+
 
   const fetchWorkspaces = async (userId) => {
     try {
@@ -60,6 +71,10 @@ export default function DashboardLayout({ children }) {
     { title: "Profile", href: "/dashboard/settings", icon: User },
     // Add more items here if needed
   ];
+
+  if (isCheckingAuth) {
+    return <div className="container mx-auto p-10">Checking authentication...</div>;
+  }
 
   return (
     <div className="container mx-auto py-10">
