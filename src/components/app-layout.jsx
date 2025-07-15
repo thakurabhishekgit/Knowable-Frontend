@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BrainCircuit, Menu, LogOut, Home, User, Folder as FolderIcon } from "lucide-react";
+import { BrainCircuit, Menu, LogOut, Home, User, Folder as FolderIcon, Github, Linkedin, Mail } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -21,11 +21,24 @@ const menuItems = [
 function Footer() {
     return (
         <footer className="border-t bg-background">
-            <div className="container mx-auto px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <div className="container mx-auto px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p className="text-sm text-muted-foreground">&copy; 2024 Knowable.AI. All rights reserved.</p>
-                <div className="flex gap-4 mt-2 sm:mt-0">
-                    <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
-                    <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">Terms of Service</Link>
+                <div className="flex items-center gap-4">
+                    <p className="text-sm text-muted-foreground">Developed by Thakut Abhishek Singh</p>
+                    <div className="flex items-center gap-3">
+                        <Link href="https://github.com/thakurabhishekgit" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                            <Github className="h-5 w-5" />
+                            <span className="sr-only">GitHub</span>
+                        </Link>
+                        <Link href="https://www.linkedin.com/in/thakurabhisheksingh31305" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                            <Linkedin className="h-5 w-5" />
+                             <span className="sr-only">LinkedIn</span>
+                        </Link>
+                        <Link href="mailto:thakur.abhisheksinght97@gmail.com" className="text-muted-foreground hover:text-foreground">
+                            <Mail className="h-5 w-5" />
+                             <span className="sr-only">Email</span>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </footer>
