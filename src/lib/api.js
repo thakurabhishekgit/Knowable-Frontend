@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 const getApiUrl = () => {
   // Hardcoding the backend URL to remove any ambiguity.
   // The backend server MUST have CORS configured to allow requests from the frontend's origin.
-  return "https://2000-firebase-studio-1752484716459.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev"; 
+  return "https://8080-firebase-studio-1752484716459.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev"; 
 };
 
 const handleResponse = async (response) => {
