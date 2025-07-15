@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
+import { Separator } from "@/components/ui/separator";
+import { GoogleIcon } from "@/components/icons/google-icon";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,6 +45,7 @@ export default function LoginPage() {
             title: "Login Successful",
             description: "Welcome back!",
         });
+        window.dispatchEvent(new Event('storage'));
         router.push("/dashboard");
       } else {
         throw new Error("Login failed: Invalid response from server");
@@ -51,6 +54,11 @@ export default function LoginPage() {
       console.error("Login failed:", error);
     }
   };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:2000/oauth2/authorization/google";
+  };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -94,6 +102,23 @@ export default function LoginPage() {
               Login
             </Button>
           </form>
+
+           <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                    </span>
+                </div>
+            </div>
+
+            <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
+                <GoogleIcon className="mr-2 h-5 w-5" />
+                Continue with Google
+            </Button>
+
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="underline">
