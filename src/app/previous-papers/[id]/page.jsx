@@ -56,8 +56,8 @@ function AnalysisResultDisplay({ analysisResult }) {
                                     <span>{item.question}</span>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className="px-4 pb-4">
-                               <p className="text-sm text-foreground whitespace-pre-wrap">{item.answer}</p>
+                            <AccordionContent className="px-6 pb-6">
+                               <p className="text-sm text-foreground whitespace-pre-wrap p-4 bg-muted rounded-md">{item.answer}</p>
                             </AccordionContent>
                         </AccordionItem>
                     ))}
@@ -90,12 +90,11 @@ export default function PreviousPapersPage() {
                     throw new Error("Workspace context is missing. Please navigate from the workspace page.");
                 }
 
-                const docPromise = api.get(`/api/documents/workspace/${workspaceId}/document/${documentId}`);
-                const papersPromise = api.get(`/api/previous-papers/document/${documentId}`);
-                
-                const [docData, papersData] = await Promise.all([docPromise, papersPromise]);
-                
+                const docData = await api.get(`/api/documents/workspace/${workspaceId}/document/${documentId}`);
                 setDocument(docData);
+                
+                // Fetch papers only after document is successfully fetched.
+                const papersData = await api.get(`/api/previous-papers/document/${documentId}`);
                 setPapers(papersData || []);
 
             } catch (error) {
