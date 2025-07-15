@@ -56,7 +56,9 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:2000/oauth2/authorization/google";
+    // This needs to be a direct navigation, not an API call, to allow the browser to follow the redirect to Google.
+    // The backend URL is constructed from our api helper.
+    window.location.href = "https://2000-firebase-studio-1752484716459.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev/oauth2/authorization/google";
   };
 
 
