@@ -111,7 +111,7 @@ export default function SingleDocumentPage() {
         </header>
 
         <main className="container mx-auto p-4 md:p-6 flex-1">
-            <div className="h-[calc(100vh-150px)] md:h-[calc(100vh-200px)]">
+            <div className="h-[calc(100vh-220px)]">
               <ResizablePanelGroup
                 direction={isMobile ? "vertical" : "horizontal"}
                 className="w-full h-full rounded-lg border"
