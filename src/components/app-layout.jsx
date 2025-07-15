@@ -13,8 +13,8 @@ import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/dashboard", label: "Dashboard", icon: User },
   { href: "/workspace", label: "Workspaces", icon: FolderIcon },
+  { href: "/dashboard", label: "Dashboard", icon: User },
 ];
 
 function Footer() {
@@ -93,27 +93,30 @@ function Header({isLoggedIn, handleLogout}) {
             </Sheet>
             
             {/* Desktop Menu */}
-            <div className="flex items-center w-full">
-                <Link href="/" className="flex items-center gap-2 font-semibold mr-6">
-                    <BrainCircuit className="w-6 h-6 text-primary" />
-                    <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
-                </Link>
-                <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
-                {visibleMenuItems.map((item) => (
-                    <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                        "transition-colors hover:text-foreground",
-                        pathname === item.href ? "text-foreground" : "text-muted-foreground"
-                    )}
-                    >
-                    {item.label}
+            <div className="flex items-center justify-between w-full">
+                <div className="flex-1 flex justify-start">
+                    <Link href="/" className="flex items-center gap-2 font-semibold">
+                        <BrainCircuit className="w-6 h-6 text-primary" />
+                        <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
                     </Link>
-                ))}
+                </div>
+                
+                <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:justify-center md:gap-5 md:text-sm lg:gap-6 flex-1">
+                    {visibleMenuItems.map((item) => (
+                        <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            "transition-colors hover:text-foreground",
+                            pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                        )}
+                        >
+                        {item.label}
+                        </Link>
+                    ))}
                 </nav>
                 
-                <div className="flex items-center gap-4 ml-auto">
+                <div className="flex items-center gap-4 flex-1 justify-end">
                     {isLoggedIn ? (
                         <UserNav />
                     ) : (
