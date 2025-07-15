@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BrainCircuit, Menu, LogOut, Home } from "lucide-react";
+import { BrainCircuit, Menu, LogOut, Home, User, Folder as FolderIcon } from "lucide-react";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -13,8 +13,8 @@ import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/workspace", label: "Workspaces" },
+  { href: "/dashboard", label: "Dashboard", icon: User },
+  { href: "/workspace", label: "Workspaces", icon: FolderIcon },
 ];
 
 function Footer() {
@@ -31,10 +31,110 @@ function Footer() {
     )
 }
 
+function Header({isLoggedIn, handleLogout}) {
+    const pathname = usePathname();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
+
+    const visibleMenuItems = isLoggedIn ? menuItems : menuItems.slice(0, 1); // Only show "Home" if not logged in
+
+    return (
+        <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50 shrink-0">
+            {/* Mobile Menu */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="md:hidden">
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Open Menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="flex flex-col p-0">
+                    <SheetHeader className="p-4 border-b">
+                        <Link href="/" className="flex items-center gap-2 font-semibold text-left">
+                            <BrainCircuit className="w-6 h-6 text-primary" />
+                            <span className="text-lg">Knowable.AI</span>
+                        </Link>
+                    </SheetHeader>
+                    {isLoggedIn && (
+                        <nav className="grid gap-2 text-lg font-medium p-4">
+                            {visibleMenuItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                                    pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                {item.icon && <item.icon className="h-5 w-5" />}
+                                {item.label}
+                            </Link>
+                            ))}
+                        </nav>
+                    )}
+                    <div className="mt-auto p-4">
+                        <Separator className="mb-4" />
+                        {isLoggedIn ? (
+                             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-2 text-lg font-medium text-muted-foreground">
+                                <LogOut className="h-5 w-5" />
+                                <span>Logout</span>
+                            </Button>
+                        ) : (
+                             <div className="flex flex-col gap-2">
+                                <Button asChild variant="outline"><Link href="/login">Login</Link></Button>
+                                <Button asChild><Link href="/register">Get Started</Link></Button>
+                            </div>
+                        )}
+                    </div>
+                </SheetContent>
+            </Sheet>
+            
+            {/* Desktop Menu */}
+            <div className="flex items-center w-full">
+                <Link href="/" className="flex items-center gap-2 font-semibold mr-6">
+                    <BrainCircuit className="w-6 h-6 text-primary" />
+                    <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
+                </Link>
+                <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
+                {visibleMenuItems.map((item) => (
+                    <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                        "transition-colors hover:text-foreground",
+                        pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                    )}
+                    >
+                    {item.label}
+                    </Link>
+                ))}
+                </nav>
+                
+                <div className="flex items-center gap-4 ml-auto">
+                    {isLoggedIn ? (
+                        <UserNav />
+                    ) : (
+                        <div className="hidden md:flex items-center gap-2">
+                            <Button asChild variant="ghost">
+                                <Link href="/login">Login</Link>
+                            </Button>
+                            <Button asChild>
+                                <Link href="/register">Get Started</Link>
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </header>
+    )
+}
+
 export function AppLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -43,105 +143,30 @@ export function AppLayout({ children }) {
       setIsLoggedIn(!!token);
     };
     checkLoginStatus();
+    // Also listen for changes in storage that might indicate login/logout
     window.addEventListener('storage', checkLoginStatus);
     return () => window.removeEventListener('storage', checkLoginStatus);
   }, []);
 
-  useEffect(() => {
-    // Close mobile menu on route change
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
-  const publicPages = ['/', '/login', '/register'];
-  if (publicPages.includes(pathname)) {
-    return <>{children}</>;
-  }
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('storage')); // Notify other components
     router.push("/");
-    setIsMobileMenuOpen(false);
   };
   
+  // Pages that should not show the footer or have a different layout structure
   const isDocumentPage = pathname.startsWith('/document/');
   const isResultsPage = pathname.startsWith('/results');
+  const isFullScreenPage = isDocumentPage || isResultsPage;
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-50 shrink-0">
-        
-        {/* Mobile Menu */}
-        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Open Menu</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0">
-                <SheetHeader className="p-4 border-b">
-                     <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-left">
-                        <BrainCircuit className="w-6 h-6 text-primary" />
-                        <span className="text-lg">Knowable.AI</span>
-                    </Link>
-                </SheetHeader>
-                <nav className="grid gap-2 text-lg font-medium p-4">
-                    {menuItems.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                            pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
-                        )}
-                    >
-                        {item.icon && <item.icon className="h-5 w-5" />}
-                        {item.label}
-                    </Link>
-                    ))}
-                </nav>
-                <div className="mt-auto p-4">
-                    <Separator className="mb-4" />
-                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-2 text-lg font-medium text-muted-foreground">
-                        <LogOut className="h-5 w-5" />
-                        <span>Logout</span>
-                    </Button>
-                </div>
-            </SheetContent>
-        </Sheet>
-        
-        {/* Desktop Menu */}
-        <div className="flex items-center w-full">
-            <Link href="/dashboard" className="hidden md:flex items-center gap-2 font-semibold mr-6">
-                <BrainCircuit className="w-6 h-6 text-primary" />
-                <span className="text-lg hidden sm:inline-block">Knowable.AI</span>
-            </Link>
-            <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 flex-1">
-            {menuItems.map((item) => (
-                <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                    "transition-colors hover:text-foreground",
-                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
-                )}
-                >
-                {item.label}
-                </Link>
-            ))}
-            </nav>
-            
-            <div className="flex items-center gap-4 ml-auto">
-                <UserNav />
-            </div>
-        </div>
-      </header>
+      <Header isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
       <main className="flex-1 flex flex-col">
         {children}
       </main>
-      {!(isDocumentPage || isResultsPage) && <Footer />}
+      {!isFullScreenPage && <Footer />}
     </div>
   );
 }
