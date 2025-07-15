@@ -13,7 +13,7 @@ export const metadata = {
   title: "Knowable.AI",
   description: "A minimal SaaS platform for knowledge management.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
   },
 };
 
