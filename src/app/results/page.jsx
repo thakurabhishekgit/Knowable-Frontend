@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { generateStudyTool } from '@/ai/flows/study-tools-flow';
 import { Button } from "@/components/ui/button"
@@ -134,7 +134,7 @@ const Quiz = ({ quizData }) => {
     );
 };
 
-export default function ResultsPage() {
+const ResultsContent = () => {
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const [toolType, setToolType] = useState(null);
@@ -219,5 +219,13 @@ export default function ResultsPage() {
                 {toolType === 'quiz' && data?.quiz && <Quiz quizData={data.quiz} />}
             </main>
         </div>
+    );
+}
+
+export default function ResultsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ResultsContent />
+        </Suspense>
     );
 }
