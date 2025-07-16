@@ -143,6 +143,11 @@ const ResultsContent = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // This check ensures the code only runs on the client
+        if (typeof window === 'undefined') {
+            return;
+        }
+
         const type = searchParams.get('type');
         const docText = sessionStorage.getItem('documentTextForTool');
         setToolType(type);
@@ -169,6 +174,7 @@ const ResultsContent = () => {
                 toast({ variant: "destructive", title: "Generation Failed", description: e.message });
             } finally {
                 setIsLoading(false);
+                // It's safer to only remove the item if it was successfully used.
                 sessionStorage.removeItem('documentTextForTool');
             }
         };
