@@ -2,9 +2,9 @@
 import { toast } from "@/hooks/use-toast";
 
 const getApiUrl = () => {
-  // Hardcoding the backend URL to remove any ambiguity.
-  // The backend server MUST have CORS configured to allow requests from the frontend's origin.
-  return "https://8080-firebase-studio-1752484716459.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev"; 
+  // Use the environment variable for the production API URL.
+  // Fallback to the local backend URL for development.
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"; 
 };
 
 const handleResponse = async (response) => {
