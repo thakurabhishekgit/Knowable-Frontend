@@ -70,18 +70,27 @@ export default function SingleWorkspacePage() {
 
   const fetchWorkspaceAndDocuments = async () => {
     if (id) {
+      setLoading(true);
       try {
-        setLoading(true);
         const workspaceData = await api.get(`/api/workspace/${id}`);
         setWorkspace(workspaceData);
-        const documentsData = await api.get(`/api/documents/workspace/${id}/documents`);
-        setDocuments(documentsData);
-      } catch (error) {
-        if (error.message && error.message.toLowerCase().includes("not found")) {
-            setDocuments([]);
-        } else {
-            console.error("Failed to fetch workspace or documents", error);
+
+        // Fetch documents only if workspace was fetched successfully
+        try {
+            const documentsData = await api.get(`/api/documents/workspace/${id}/documents`);
+            setDocuments(documentsData);
+        } catch (docError) {
+             if (docError.message && docError.message.toLowerCase().includes("not found")) {
+                setDocuments([]); // This is the expected case for no documents
+            } else {
+                console.error("Failed to fetch documents", docError);
+            }
         }
+
+      } catch (error) {
+        console.error("Failed to fetch workspace", error);
+        setWorkspace(null); // Clear workspace on error
+        setDocuments([]); // Clear documents if workspace fails
       } finally {
         setLoading(false);
       }
@@ -151,7 +160,7 @@ export default function SingleWorkspacePage() {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                        <BreadcrumbLink href="/workspace">Workspaces</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard">Workspaces</BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
