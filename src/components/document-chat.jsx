@@ -63,11 +63,12 @@ export function DocumentChat({ document }) {
     }
   }, [messages]);
 
-  // Effect to fetch chat history on component mount
+  // Effect to fetch chat history on component mount, re-running only when document.id changes
   useEffect(() => {
     const fetchChatHistory = async () => {
       if (!document?.id) {
         setIsHistoryLoading(false);
+        setMessages([]); // Ensure chat is cleared if there's no document ID
         return
       };
       setIsHistoryLoading(true);
@@ -79,6 +80,8 @@ export function DocumentChat({ document }) {
             { text: item.answer, from: 'bot' }
           ]);
           setMessages(formattedHistory);
+        } else {
+            setMessages([]); // If response is not an array, start fresh
         }
       } catch (error) {
         // It's okay if this fails (e.g., 404), it just means no history yet.
