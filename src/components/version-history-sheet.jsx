@@ -23,49 +23,25 @@ const formatTime = (dateString) => {
     return new Intl.DateTimeFormat('en-US', { timeStyle: 'short' }).format(date);
 }
 
-const mockHistory = [
-    {
-        date: "2024-07-28T10:00:00.000Z",
-        events: [
-            {
-                version: 3,
-                time: "2024-07-28T14:30:00.000Z",
-                author: "Alex Doe",
-                description: "Updated document with new findings.",
-                current: true,
-            },
-            {
-                version: 2,
-                time: "2024-07-28T11:15:00.000Z",
-                author: "Alex Doe",
-                description: "Minor typo fixes.",
-            },
-        ]
-    },
-    {
-        date: "2024-07-27T09:00:00.000Z",
-        events: [
-            {
-                version: 1,
-                time: "2024-07-27T09:05:00.000Z",
-                author: "System",
-                description: "Item created.",
-            },
-        ]
-    }
-];
-
 export function VersionHistorySheet({ children, item }) {
   if (!item) return null;
 
-  // For now, we'll use a mix of real and mock data.
-  // The first version will use the item's creation date.
-  const history = mockHistory;
-  if (item.createdAt) {
-      history[history.length - 1].events[0].time = item.createdAt;
-      history[history.length - 1].date = item.createdAt;
-  }
-
+  // The version history is now simplified to only show the creation event.
+  const history = [
+    {
+        date: item.createdAt,
+        events: [
+             {
+                version: 1,
+                time: item.createdAt,
+                author: "System",
+                description: "Item created.",
+                current: true,
+            },
+        ]
+    }
+  ];
+  
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -73,7 +49,7 @@ export function VersionHistorySheet({ children, item }) {
         <SheetHeader>
           <SheetTitle>Version History</SheetTitle>
           <SheetDescription>
-            Review and restore previous versions of &quot;{item.name}&quot;.
+            Review the history of &quot;{item.name || item.title}&quot;.
           </SheetDescription>
         </SheetHeader>
         <ScrollArea className="h-[calc(100%-4rem)] pr-4 mt-4">
@@ -103,10 +79,8 @@ export function VersionHistorySheet({ children, item }) {
                                     <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
                                     
                                     <div className="mt-2 flex gap-2 items-center">
-                                        {event.current ? (
+                                        {event.current && (
                                              <Badge variant="outline">Current</Badge>
-                                        ) : (
-                                            <Button variant="outline" size="sm">Restore</Button>
                                         )}
                                     </div>
                                 </div>

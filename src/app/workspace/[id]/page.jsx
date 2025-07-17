@@ -24,6 +24,30 @@ import { NewItemDialog } from "@/components/new-item-dialog";
 import { VersionHistorySheet } from "@/components/version-history-sheet";
 import { Clock, Folder, PlusCircle, FileText } from "lucide-react";
 import { api } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function DocumentGridSkeleton() {
+    return (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+                 <Card key={i} className="h-full">
+                    <CardHeader>
+                      <div className="flex items-start gap-4">
+                        <Skeleton className="h-6 w-6 mt-1 rounded" />
+                        <div>
+                          <Skeleton className="h-6 w-40 mb-2" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-4 w-48" />
+                    </CardContent>
+                  </Card>
+            ))}
+        </div>
+    );
+}
 
 export default function SingleWorkspacePage() {
   const params = useParams();
@@ -86,8 +110,30 @@ export default function SingleWorkspacePage() {
     });
   };
 
-  if (isCheckingAuth || loading) {
-    return <div className="container mx-auto p-8">Loading workspace...</div>;
+  if (isCheckingAuth) {
+    return null; // Don't render while checking auth
+  }
+  
+  if (loading) {
+     return (
+        <div className="container mx-auto px-4 md:px-6 py-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                    <Skeleton className="h-5 w-48 mb-4" />
+                    <Skeleton className="h-10 w-64 mb-2" />
+                    <Skeleton className="h-5 w-80" />
+                </div>
+                <div className="flex gap-2">
+                    <Skeleton className="h-10 w-28" />
+                    <Skeleton className="h-10 w-28" />
+                </div>
+            </div>
+             <div className="grid gap-8">
+                <h2 className="text-2xl font-semibold">Documents</h2>
+                <DocumentGridSkeleton />
+            </div>
+        </div>
+     );
   }
 
   if (!workspace) {

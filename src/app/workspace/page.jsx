@@ -48,6 +48,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
@@ -126,6 +127,54 @@ function ItemActions({ item, userId, onWorkspaceDeleted }) {
     )
 }
 
+function WorkspaceTableSkeleton() {
+    return (
+        <div className="hidden md:block border rounded-lg shadow-sm">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[40%]">Name</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Created At</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <TableRow key={i}>
+                            <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-64" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                            <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+function WorkspaceCardSkeleton() {
+    return (
+        <div className="md:hidden grid gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                    <CardHeader>
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-5 w-5 rounded-full" />
+                            <Skeleton className="h-5 w-32" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-4 w-full mb-2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+}
+
 export default function WorkspacePage() {
   const router = useRouter();
   const [workspaces, setWorkspaces] = useState([]);
@@ -174,8 +223,8 @@ export default function WorkspacePage() {
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
   }
 
-  if (isCheckingAuth || loading) {
-    return <div className="p-10 container mx-auto">Loading workspaces...</div>
+  if (isCheckingAuth) {
+    return null; // Don't show anything while checking auth
   }
 
   return (
@@ -194,7 +243,12 @@ export default function WorkspacePage() {
         </NewWorkspaceDialog>
       </div>
 
-      {workspaces.length === 0 && !loading ? (
+      {loading ? (
+        <>
+            <WorkspaceTableSkeleton />
+            <WorkspaceCardSkeleton />
+        </>
+      ) : workspaces.length === 0 ? (
         <div className="text-center py-10 border rounded-lg">
             <h3 className="text-xl font-semibold">No workspaces yet</h3>
             <p className="text-muted-foreground mt-2">Get started by creating a new workspace.</p>
