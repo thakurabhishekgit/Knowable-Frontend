@@ -25,6 +25,7 @@ import { api } from "@/lib/api";
 import { PreviousPaperDialog } from "@/components/previous-paper-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateAnswers } from "@/ai/flows/question-answer-flow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function AnalysisResultDisplay({ analysisResult }) {
     if (!analysisResult || !analysisResult.results || analysisResult.results.length === 0) {
@@ -67,6 +68,38 @@ function AnalysisResultDisplay({ analysisResult }) {
     )
 }
 
+function PapersPageSkeleton() {
+    return (
+        <div className="container mx-auto px-4 md:px-6 py-10">
+            <header className="mb-8">
+                <Skeleton className="h-5 w-2/3 mb-4" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-9 w-80" />
+                        <Skeleton className="h-6 w-96" />
+                    </div>
+                    <Skeleton className="h-10 w-40" />
+                </div>
+            </header>
+            <main>
+                <div className="space-y-4">
+                    {Array.from({length: 2}).map((_, i) => (
+                        <Card key={i} className="flex flex-col sm:flex-row items-start justify-between p-4 gap-4">
+                            <div className="flex items-start gap-4 flex-1">
+                                <Skeleton className="h-8 w-8 rounded-md mt-1 shrink-0" />
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-5 w-1/2" />
+                                    <Skeleton className="h-4 w-1/3" />
+                                </div>
+                            </div>
+                            <Skeleton className="h-10 w-28" />
+                        </Card>
+                    ))}
+                </div>
+            </main>
+        </div>
+    )
+}
 
 export default function PreviousPapersPage() {
     const params = useParams();
@@ -160,12 +193,7 @@ export default function PreviousPapersPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-full p-10">
-                <Loader2 className="w-8 h-8 animate-spin mr-2" />
-                <span>Loading papers...</span>
-            </div>
-        )
+        return <PapersPageSkeleton />;
     }
 
     if (!document) {

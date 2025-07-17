@@ -19,6 +19,44 @@ import {
 import { FileText } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatPanel } from "@/components/chat-panel";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function DocumentPageSkeleton() {
+    return (
+        <div className="flex flex-col h-full">
+            <header className="container mx-auto px-4 md:px-6 py-4 border-b">
+                <Skeleton className="h-5 w-1/3 mb-4" />
+                <Skeleton className="h-8 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-1/4" />
+            </header>
+             <main className="container mx-auto p-4 md:p-6 flex-1">
+                 <div className="h-[100vh]">
+                    <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
+                        <ResizablePanel defaultSize={65} minSize={30}>
+                            <div className="w-full h-full flex items-center justify-center bg-muted">
+                                <Skeleton className="h-full w-full" />
+                            </div>
+                        </ResizablePanel>
+                         <ResizableHandle withHandle />
+                        <ResizablePanel defaultSize={35} minSize={30}>
+                            <div className="h-full flex flex-col">
+                                <div className="p-2 border-b">
+                                     <Skeleton className="h-9 w-full" />
+                                </div>
+                                <div className="p-4 flex-1 flex flex-col items-center justify-center gap-4">
+                                    <Skeleton className="h-8 w-full" />
+                                    <Skeleton className="h-8 w-full" />
+                                    <Skeleton className="h-24 w-full" />
+                                </div>
+                            </div>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                 </div>
+             </main>
+        </div>
+    )
+}
+
 
 export default function SingleDocumentPage() {
   const params = useParams();
@@ -62,7 +100,7 @@ export default function SingleDocumentPage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto p-8">Loading document...</div>;
+    return <DocumentPageSkeleton />;
   }
 
   if (!document) {
