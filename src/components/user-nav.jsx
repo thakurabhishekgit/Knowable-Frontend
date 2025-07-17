@@ -83,7 +83,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/profile">
+            <Link href="/dashboard/settings">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
@@ -91,13 +91,9 @@ export function UserNav() {
           <DropdownMenuItem asChild>
             <Link href="/dashboard">
               <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>
-           <DropdownMenuItem>
-              <LifeBuoy className="mr-2 h-4 w-4" />
-              <span>Support</span>
-            </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
