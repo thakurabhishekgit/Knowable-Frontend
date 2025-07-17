@@ -221,42 +221,45 @@ export function DocumentChat({ document }) {
         </div>
         ) : (
         <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-muted-foreground mb-6">
+            <div className="text-muted-foreground">
                 <MessageSquare className="w-10 h-10 mx-auto mb-2" />
-                <p>No messages yet.</p>
-                <p className="text-xs">Ask a question or use a suggestion to start.</p>
-            </div>
-            <div className='grid grid-cols-1 gap-2 w-full max-w-xs'>
-                {suggestionPrompts.map((prompt, index) => (
-                    <Button 
-                        key={index} 
-                        variant="outline" 
-                        className="justify-start text-left h-auto p-3"
-                        onClick={() => handleSuggestionClick(prompt.text)}
-                        disabled={isLoading}
-                    >
-                        <prompt.icon className="w-4 h-4 mr-2 shrink-0" />
-                        <span className="text-sm">{prompt.text}</span>
-                    </Button>
-                ))}
+                <p>Chat with your document.</p>
+                <p className="text-xs">Ask a question or use a suggestion below.</p>
             </div>
         </div>
         )}
     </ScrollArea>
-    <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t">
-        <Input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask about the document..."
-        autoComplete="off"
-        disabled={isLoading || isHistoryLoading}
-        className="text-sm"
-        />
-        <Button type="submit" size="icon" disabled={isLoading || isHistoryLoading || !input.trim()}>
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-        <span className="sr-only">Send</span>
-        </Button>
-    </form>
+     <div className='pt-2 mt-auto'>
+        <div className='flex items-center justify-center gap-2 mb-2'>
+            {suggestionPrompts.map((prompt, index) => (
+                <Button 
+                    key={index} 
+                    variant="outline" 
+                    size="sm"
+                    className="justify-start text-left h-auto p-2"
+                    onClick={() => handleSuggestionClick(prompt.text)}
+                    disabled={isLoading}
+                >
+                    <prompt.icon className="w-4 h-4 mr-2 shrink-0" />
+                    <span className="text-xs">{prompt.text}</span>
+                </Button>
+            ))}
+        </div>
+        <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-2 border-t">
+            <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about the document..."
+            autoComplete="off"
+            disabled={isLoading || isHistoryLoading}
+            className="text-sm"
+            />
+            <Button type="submit" size="icon" disabled={isLoading || isHistoryLoading || !input.trim()}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            <span className="sr-only">Send</span>
+            </Button>
+        </form>
+    </div>
     </div>
   );
 }
