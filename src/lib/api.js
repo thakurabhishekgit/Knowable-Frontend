@@ -6,7 +6,6 @@ const getApiUrl = () => {
   // Fallback to the local backend URL for development.
   return "https://knowable-backend-latest.onrender.com"; 
 };
-
 const handleResponse = async (response) => {
   if (response.ok) {
     try {
