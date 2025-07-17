@@ -58,12 +58,20 @@ const generateStudyToolFlow = ai.defineFlow(
       });
       return llmResponse.output || {};
     } catch (error) {
-      console.error("AI Error in generateStudyToolFlow:", error);
-      // Return a structured error or an empty object. The frontend should handle this.
-      if (error.message && error.message.includes('503')) {
-          throw new Error("I'm sorry, but the AI service is currently overloaded. Please try again in a few moments.");
+      console.error("AI Flow Error in generateStudyToolFlow:", error);
+      let errorMessage = "An unexpected error occurred while trying to generate the study tool.";
+      if (error.message) {
+        if (error.message.includes('API key not valid')) {
+            errorMessage = "The Google AI API key is missing or invalid on the server.";
+        } else if (error.message.includes('503')) {
+            errorMessage = "I'm sorry, but the AI service is currently overloaded. Please try again in a few moments.";
+        } else {
+            // Forward a sanitized version of the original error
+            errorMessage = `AI service error: ${error.message}`;
+        }
       }
-      throw new Error("An unexpected error occurred while trying to generate the study tool. Please try again later.");
+      // Throw a new error that will be caught by the client-side code
+      throw new Error(errorMessage);
     }
   }
 );
