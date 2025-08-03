@@ -18,9 +18,9 @@ import { analyzeText } from '@/ai/flows/text-analyzer-flow';
 import { useToast } from '@/hooks/use-toast';
 
 const analysisPrompts = [
-    { text: "Summarize this text", icon: BookText, task: "Summarize" },
-    { text: "Explain this concept", icon: Lightbulb, task: "Explain" },
-    { text: "Explain Like I'm 5", icon: Baby, task: "Explain Like I'm 5" },
+    { text: "Summarize", icon: BookText, task: "Summarize" },
+    { text: "Explain Concept", icon: Lightbulb, task: "Explain Key Concepts" },
+    { text: "ELI5", icon: Baby, task: "Explain Like I'm 5" },
 ];
 
 const popularLanguages = ["Hindi", "Telugu", "Spanish", "French"];
@@ -89,6 +89,7 @@ export function TextAnalyzerPanel({ document }) {
                         onClick={() => handleAnalysis(prompt.task)}
                         disabled={isLoading || !inputText.trim()}
                         size="sm"
+                        className="whitespace-normal h-auto py-1.5"
                     >
                         <prompt.icon className="w-4 h-4 mr-2" />
                         {prompt.text}
@@ -99,6 +100,7 @@ export function TextAnalyzerPanel({ document }) {
                     onClick={() => handleAnalysis("Transliterate to Hinglish")}
                     disabled={isLoading || !inputText.trim()}
                     size="sm"
+                    className="whitespace-normal h-auto py-1.5"
                 >
                     <Repeat className="w-4 h-4 mr-2" />
                     Transliterate
