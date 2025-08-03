@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown, Repeat } from 'lucide-react';
+import { Loader2, BookText, Lightbulb, Languages, Sparkles, ChevronDown, Repeat, Baby } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import {
@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 const analysisPrompts = [
     { text: "Summarize this text", icon: BookText, task: "Summarize" },
     { text: "Explain this concept", icon: Lightbulb, task: "Explain" },
+    { text: "Explain Like I'm 5", icon: Baby, task: "Explain Like I'm 5" },
 ];
 
 const popularLanguages = ["Hindi", "Telugu", "Spanish", "French"];

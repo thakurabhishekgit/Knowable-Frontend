@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 const AnalyzeTextInputSchema = z.object({
     text: z.string().describe('The text snippet to analyze.'),
-    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to Hindi", "Transliterate to Hinglish").'),
+    task: z.string().describe('The analysis task to perform (e.g., "Summarize", "Explain Key Concepts", "Translate to Hindi", "Transliterate to Hinglish", "Explain Like I\'m 5").'),
 });
 
 const analyzeTextFlow = ai.defineFlow(
@@ -27,6 +27,7 @@ const analyzeTextFlow = ai.defineFlow(
 
         - If you are translating, only provide the translated text.
         - If you are asked to "Transliterate to Hinglish", convert the Hindi text from the Devanagari script to the Roman alphabet (English letters) while preserving the Hindi pronunciation and meaning. For example, "नमस्ते दुनिया" would become "Namaste Duniya".
+        - If you are asked to "Explain Like I'm 5", break down the concept in the simplest terms possible, using analogies a young child could understand. Avoid jargon completely.
         - For all other tasks, keep your response concise and directly related to the user's request.
 
         Text Snippet:
