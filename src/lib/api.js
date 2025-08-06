@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 const getApiUrl = () => {
   // Use the environment variable for the production API URL.
   // Fallback to the local backend URL for development.
-  return "https://knowable-backend-latest.onrender.com"; 
+  return "http://localhost:2000"; 
 };
 
 const handleResponse = async (response) => {
