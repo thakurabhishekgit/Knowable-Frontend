@@ -5,8 +5,7 @@ const getApiUrl = () => {
   // Use the environment variable for the production API URL.
   // Fallback to the local backend URL for development.
   return "http://localhost:2000"; 
-};
-
+}
 const handleResponse = async (response) => {
   if (response.ok) {
     try {
